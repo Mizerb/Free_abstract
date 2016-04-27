@@ -10,8 +10,8 @@ class road
 {
 private:
     std::list<int> contents;
-    pair srtcoord;
-    pair endcoord;
+    std::pair<int,int> srtcoord;
+    std::pair<int,int> endcoord;
     int start;
     int end;
 public:

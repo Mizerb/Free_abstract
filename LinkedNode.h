@@ -5,23 +5,23 @@ class LinkedNode
 {
     public:
         T data;
-        Node()
+        LinkedNode()
         {
             //default contructor
         }
         
         
-        Node(T indata)
+        LinkedNode(T indata)
         {
             data = indata;
             next = NULL;
             
         }
         
-        Node<T>* Node<T>::DeleteAfter()
+        LinkedNode<T>* LinkedNode<T>::DeleteAfter()
         {
               // store the next Node in a temporary Node
-            Node<T>* tempNode = next;
+            LinkedNode<T>* tempNode = next;
             // check if there is a next node
             if(next != NULL)
                 next = next->next;
@@ -31,7 +31,7 @@ class LinkedNode
         
         
     private:
-        Node<T> * next;
+        LinkedNode<T> * next;
         
     
     
