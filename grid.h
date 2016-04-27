@@ -1,8 +1,6 @@
 /* grid.h */
 
-#include <vector>
-
-#include <intersection.h>
+#include "includer.h"
 
 #ifndef GRID_H
 #define GRID_H
