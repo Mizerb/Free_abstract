@@ -14,8 +14,8 @@ public:
 
     int GID; //Grid ID
     
-    intersection();
     intersection(int x, int y);
+    intersection(int GID_) : GID(GID_){}
     ~intersection(){delete look_up;}
     
     

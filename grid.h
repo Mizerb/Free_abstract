@@ -5,6 +5,8 @@
 
 #include "includer.h"
 #include "intersection.h"
+#include "City.h"
+#include "bridge_intersection.h"
 
 class grid
 {

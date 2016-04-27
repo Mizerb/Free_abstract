@@ -1,5 +1,5 @@
 #include "includer.h"
-
+#include "grid.h"
 grid::grid()
 {
     return;
@@ -11,12 +11,16 @@ grid::grid(int x, int y)
     x_size = x;
     y_size = y;
 
+    int x_counter = 0;
     for( int i = 0 ; i < y_size ; i++)
     {
         std::vector<intersection*> local_ptrs(x_size , NULL);
-        for (std::vector<intersection*>::iterator i = local_ptrs.begin(); i != local_ptrs.end(); ++i)
+        
+        x_counter = 0;
+        for (std::vector<intersection*>::iterator j = local_ptrs.begin(); j != local_ptrs.end(); ++j, x_counter++)
         {
-            *i = new intersection();             
+            if(i == 0 || i== y_size-1) *j = new bridge_intersection(x_counter, i);
+            else *j = new intersection(x_counter,i);             
         }
         intersections.push_back(local_ptrs);
     }
