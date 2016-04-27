@@ -7,17 +7,28 @@
 
 class intersection
 {
+    int * look_up;
 public:
-    
-    int name;
+    virtual char type(){return 'i';}
+
+
+    int GID; //Grid ID
     
     intersection();
     ~intersection();
     
     
-    
-    int send_lookup(int dest);
+
+
+    int get_GID() const{ return GID;} // should I not?
+    int send_lookup (int dest) const;
     	
 };
+
+intersection::intersection()
+{
+    return;
+}
+
 
 #endif
