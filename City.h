@@ -10,6 +10,9 @@ private:
     char that;
     int population;
 public:
+    char type(){ return 'c';}
+
+
     City();
     City(int GID_, int pop): intersection(GID_) {}
     City(int x_, int y_, int pop): intersection(x_,y_), population(pop) {}
