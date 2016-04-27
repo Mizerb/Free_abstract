@@ -1,8 +1,4 @@
-#include "Car.h"
 
-
-#ifndef LINKEDNODE_H
-#define LINKEDNODE_H
 
 template<class T>
 class LinkedNode
@@ -22,7 +18,7 @@ class LinkedNode
             
         }
         
-        LinkedNode<T>* DeleteAfter()
+        LinkedNode<T>* LinkedNode<T>::DeleteAfter()
         {
               // store the next Node in a temporary Node
             LinkedNode<T>* tempNode = next;
@@ -40,6 +36,4 @@ class LinkedNode
     
     
     
-};
-
-#endif
+}

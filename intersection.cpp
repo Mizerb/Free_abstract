@@ -1,4 +1,5 @@
 #include "includer.h"
+#include "LinkedNode.h"
 
 #include "intersection.h"
 

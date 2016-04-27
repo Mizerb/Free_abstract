@@ -3,10 +3,10 @@
 #ifndef CAR_H
 #define CAR_H 
 
-class car{
+class Car{
     int destination;
-    car(){}
-    car(int dest)
+    Car(){}
+    Car(int dest)
     {
         destination = dest;
     }

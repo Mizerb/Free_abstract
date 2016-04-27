@@ -1,5 +1,7 @@
 /* Intersection.h */
 
+#include "LinkedNode.h"
+
 #ifndef INTERSECTION_H
 #define INTERSECTION_H
 
@@ -10,8 +12,8 @@ class intersection
     int y_;
     LinkedNode<Car>* head;
     LinkedNode<Car>* tail;
-    vector<*road> outConnections;
-    vector<int> inConnections;
+    std::vector<road*> outConnections;
+    std::vector<int> inConnections;
 public:
     virtual char type(){return 'i';}
 
