@@ -6,7 +6,6 @@
 #include <mpi.h>
 
 #include "Road.h"
-#include "Cars.h"
 #include "intersection.h"
 #include "City.h"
 #include "grid.h"

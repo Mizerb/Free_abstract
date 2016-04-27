@@ -11,10 +11,10 @@ Rank::Rank(int x_world_size_ , int y_world_size_)
 
     y_size = y_world_size/mpi_comm_size;
 
-    
+    /*
     if( my_rank != 0 &&  my_rank != mpi_comm_size -1) y_size += 1;
     else y_size+=2;
-    
+    */
     //Do I worry about crossing otherwise? How? 
 
     local_grid = new grid(x_world_size , y_size);

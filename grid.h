@@ -16,6 +16,9 @@ private:
 
     std::vector<std::vector<intersection*> > intersections;
     std::vector<City*> Cities;
+
+    std::vector<bridge_intersection*> top_border;
+    std::vector<bridge_intersection*> bot_border;
 public:
     grid();
     ~grid();
@@ -26,7 +29,9 @@ public:
     void add_city(int x , int y , int pop);
     
 
-    
+    void add_link(int x_1, int y_1, int x_2, int y_2, int weight);
+
+    void add_border_link(int x)
     //The Grid is constant
     
     //The Grid does not change it's parameters
