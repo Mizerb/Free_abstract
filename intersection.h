@@ -1,13 +1,13 @@
 /* Intersection.h */
 
-#include "includer.h"
-
 #ifndef INTERSECTION_H
 #define INTERSECTION_H
 
 class intersection
 {
     int * look_up;
+    int x_;
+    int y_;
 public:
     virtual char type(){return 'i';}
 
@@ -15,7 +15,8 @@ public:
     int GID; //Grid ID
     
     intersection();
-    ~intersection();
+    intersection(int x, int y);
+    ~intersection(){delete look_up;}
     
     
 
@@ -25,10 +26,7 @@ public:
     	
 };
 
-intersection::intersection()
-{
-    return;
-}
+
 
 
 #endif
