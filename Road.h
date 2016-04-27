@@ -1,7 +1,7 @@
 /*ROAD.h */
 
 #include "includer.h"
-#include "utility.h"
+#include <utility>
 
 #ifndef ROAD_H
 #define ROAD_H
@@ -10,8 +10,8 @@ class road
 {
 private:
     std::list<int> contents;
-    pair srtcoord;
-    pair endcoord;
+    std::pair<int,int> srtcoord;
+    std::pair<int,int> endcoord;
     int start;
     int end;
 public:

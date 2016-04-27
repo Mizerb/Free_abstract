@@ -10,6 +10,11 @@ intersection::add_car(Car car)
     
 }
 
+intersection::process_cars()
+{
+    
+    
+}
 
 intersection::intersection( int x, int y)
 {
