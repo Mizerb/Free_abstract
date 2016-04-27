@@ -17,6 +17,14 @@ intersection::process_cars()
     
 }
 
+LinkedNode::getHead()
+{
+    LinkedNode<Car> *head = this.head;
+    this.head = head->next;
+    head->next = NULL;
+    return head;
+}
+
 intersection::intersection( int x, int y)
 {
     x_ = x;

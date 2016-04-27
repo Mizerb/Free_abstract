@@ -19,13 +19,12 @@ public:
 
 
     int GID; //Grid ID
-    
     intersection(int x, int y);
     intersection(int GID_) : GID(GID_){}
     ~intersection(){delete look_up;}
     
     
-
+    LinkedNode<Car>* getHead();
     void add_car(Car car);
     void process_cars();
     int get_GID() const{ return GID;} // should I not?
