@@ -1,2 +1,2 @@
 all:
-	mpicc *.cpp -o test.exe
+	mpic++ test.cpp -o test.exe
