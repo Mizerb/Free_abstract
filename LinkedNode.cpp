@@ -13,7 +13,7 @@ class LinkedNode
         
         Node(T indata)
         {
-            data = indata
+            data = indata;
             next = NULL;
             
         }
@@ -28,6 +28,7 @@ class LinkedNode
 
             return tempNode;
         }
+        
         
     private:
         Node<T> * next;

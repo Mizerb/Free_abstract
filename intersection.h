@@ -8,6 +8,10 @@ class intersection
     int * look_up;
     int x_;
     int y_;
+    LinkedNode<Car>* head;
+    LinkedNode<Car>* tail;
+    vector<*road> outConnections;
+    vector<int> inConnections;
 public:
     virtual char type(){return 'i';}
 
@@ -20,7 +24,8 @@ public:
     
     
 
-
+    void add_car(Car car);
+    void process_cars();
     int get_GID() const{ return GID;} // should I not?
     int send_lookup (int dest) const;
     	
