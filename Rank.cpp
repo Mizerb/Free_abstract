@@ -19,7 +19,7 @@ Rank::Rank(int x_world_size_ , int y_world_size_)
     //Do I worry about crossing otherwise? How? 
 
     local_grid = new grid(x_world_size , y_size);
-    local_grid->rank_displace = y_size*x_world_size*my_rank /*MATH*/;
+    local_grid->set_displacement( y_size*x_world_size*my_rank) /*MATH*/;
 }
 
 void Rank::City_Start(int * cities_, int leng)
@@ -50,14 +50,16 @@ void Rank::Add_Roads(int * GIDs, int leng)
         else if(in_grid(GIDs[i]) )
         {
             //ADD border road and stuff
-            local_grid->border_road(GIDs[i] + GIDs[i+1]);
+            bridge_intersection *a = local_grid->border_road(GIDs[i], GIDs[i+1]);
 
-            local_grid->add_road();
+            local_grid->add_road(GIDs[i] , a);
         }
         else if(in_grid(GIDs[i+1]))
         {
             // Add 
-            local_grid->add_road();
+            bridge_intersection *a = local_grid->border_road(GIDs[i], GIDs[i+1]);
+
+            local_grid->add_road(a , GIDs[i+1]);
         }
     }
 }
@@ -71,16 +73,31 @@ void Rank::Run_Sim()
     return;
 }
 
-void Send_Result()
+void Rank::Send_Result()
 {
     //take it away Chris!!!!
     return;
 }
 
-void Reset_Sim()
+void Rank::Reset_Sim()
 {
     //Oh this is my job (Ben)
     local_grid->road_reset();
     //Done
     return;
+}
+
+bool Rank::in_grid(int GID)
+{
+    return false;
+}
+
+int GID_to_x(int GID)
+{
+    return 0;
+}
+
+int GID_to_y(int GID)
+{
+    return 0;
 }
