@@ -36,10 +36,45 @@ void grid::add_city(int x, int y , int pop)
 }
 
 
-#ifndef Link_Class
-#define Link_Class later_to_be_made
-#endif
-void grid::add_link(int x_1, int y_1, int x_2, int y_2, int weight)
+void grid::add_road(int GID_f , int GID_t)
 {
-    LinkedNode;
+    GID_f -= rank_displace;
+    GID_t -= rank_displace;
+
+    int x = GID_f%x_size;
+    int y = GID_f/y_size;
+
+    roads.push_back(road(GID_f, GID_t));
+    road.set_start( x, y );
+    intersections[y][x]->add_out_road(&(roads.back()));
+
+    x = GID_t%x_size;
+    y = GID_t/y_size;
+    road.set_end(x,y);
+    intersections[y][x]->add_in_road(&(roads.back()));
+}
+
+void grid::add_road(bridge_intersection* from_, int GID_t)
+{
+    return;
+}
+
+void grid::add_road(int GID_f, bridge_intersection* to)
+{
+    return;
+}
+
+
+void grid::road_reset()
+{
+    for(int i =0 ; i<intersections.size(); i++)
+    {
+        for(int j=0; j<intersections[i].size();i++)
+        {
+            intersections[i][j]->clear_connections();
+        }
+    }
+    bridges.clear();
+    roads.clear();
+
 }

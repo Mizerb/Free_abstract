@@ -18,12 +18,27 @@ class Rank
 
 
     grid * local_grid;
+
+    bool in_grid(int GID);
+    int GID_to_x(int GID);
+    int GID_to_y(int GID);
+
 public:
     Rank(int x_world_size , int y_world_size);
     ~Rank();
     
 
     void City_Start( int * cities_, int leng);
+
+
+    void Add_Roads( int *GIDs, int leng);
+
+    void Run_Sim();
+
+    void Send_Result();
+
+    void Reset_Sim();
+
 };
 
 

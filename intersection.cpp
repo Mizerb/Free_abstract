@@ -31,3 +31,13 @@ intersection::intersection( int x, int y)
     y_ = y;
     return;
 }
+
+intersection::add_out_road(road* new_road)
+{
+    outConnections.push_back(new_road);
+}
+
+intersection::add_in_road(road* new_road)
+{
+    inConnections.push_back(new_road);
+}
