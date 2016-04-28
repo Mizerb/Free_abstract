@@ -36,12 +36,14 @@ public:
     void add_link(int x_f, int y_f, int x_t, int y_t, int weight);
 
     void add_road(int GID_f , int GID_t);
+
     void add_road(bridge_intersection* from_, int GID_t);
     void add_road(int GID_f, bridge_intersection* to);
 
-    void add_border_link(int x);
+    bridge_intersection* border_road(int GID_f, int GID_t);
 
     int get_displacement()const {return rank_displace;}
+    void set_displacement(int dis) { rank_displace = dis;}
     //The Grid is constant
     
     //The Grid does not change it's parameters

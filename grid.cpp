@@ -19,7 +19,7 @@ grid::grid(int x, int y)
         x_counter = 0;
         for (std::vector<intersection*>::iterator j = local_ptrs.begin(); j != local_ptrs.end(); ++j, x_counter++)
         {
-            else *j = new intersection(x_counter,i);             
+            *j = new intersection(x_counter,i);             
         }
         intersections.push_back(local_ptrs);
     }
@@ -45,19 +45,19 @@ void grid::add_road(int GID_f , int GID_t)
     int y = GID_f/y_size;
 
     roads.push_back(road(GID_f, GID_t));
-    road.set_start( x, y );
+    roads.back().set_start( x, y );
     intersections[y][x]->add_out_road(&(roads.back()));
 
     x = GID_t%x_size;
     y = GID_t/y_size;
-    road.set_end(x,y);
+    roads.back().set_end(x,y);
     intersections[y][x]->add_in_road(&(roads.back()));
 }
 
 void grid::add_road(bridge_intersection* from_, int GID_t)
 {
     return;
-}
+} 
 
 void grid::add_road(int GID_f, bridge_intersection* to)
 {

@@ -15,8 +15,8 @@ private:
     int start;
     int end;
 public:
-    road(int start, int finish);
-    ~road();
+    road(int start_, int finish_): start(start_) , end(finish_) {}
+    //~road();
     
     void set_start(int x, int y){ srtcoord = std::make_pair(x,y); }
     void set_end  (int x, int y){ endcoord = std::make_pair(x,y); }

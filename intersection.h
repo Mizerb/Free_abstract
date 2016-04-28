@@ -1,6 +1,7 @@
 /* Intersection.h */
 
 #include "LinkedNode.h"
+#include "Road.h"
 
 #ifndef INTERSECTION_H
 #define INTERSECTION_H
