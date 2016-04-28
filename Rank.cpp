@@ -50,14 +50,16 @@ void Rank::Add_Roads(int * GIDs, int leng)
         else if(in_grid(GIDs[i]) )
         {
             //ADD border road and stuff
-            bridge_intersection *a = local_grid->border_road(GIDs[i], GIDs[i+1]);
+            int other_rank= (GIDs[i+1]/x_world_size)/y_size; 
+            bridge_intersection *a = local_grid->border_road(GIDs[i], GIDs[i+1], other_rank);
 
             local_grid->add_road(GIDs[i] , a);
         }
         else if(in_grid(GIDs[i+1]))
         {
             // Add 
-            bridge_intersection *a = local_grid->border_road(GIDs[i], GIDs[i+1]);
+            int other_rank= (GIDs[i+1]/x_world_size)/y_size; 
+            bridge_intersection *a = local_grid->border_road(GIDs[i], GIDs[i+1], other_rank);
 
             local_grid->add_road(a , GIDs[i+1]);
         }
@@ -89,15 +91,17 @@ void Rank::Reset_Sim()
 
 bool Rank::in_grid(int GID)
 {
-    return false;
+    int GID_rank = (GID/x_world_size)/y_size;
+
+    return (GID_rank == my_rank);
 }
 
-int GID_to_x(int GID)
+int Rank::GID_to_x(int GID)
 {
-    return 0;
+    return GID % x_world_size;
 }
 
-int GID_to_y(int GID)
+int Rank::GID_to_y(int GID)
 {
-    return 0;
+    return GID/(x_world_size);
 }

@@ -54,13 +54,42 @@ void grid::add_road(int GID_f , int GID_t)
     intersections[y][x]->add_in_road(&(roads.back()));
 }
 
+bridge_intersection* grid::border_road(int GID_f, int GID_t, int other_rank)
+{
+    int x = (int) (-.5)*(((GID_f+GID_t)*(GID_f+GID_t+1))+GID_t);
+
+    bridges.push_back(bridge_intersection(x, other_rank));
+
+    return &(bridges.back());
+}
+
 void grid::add_road(bridge_intersection* from_, int GID_t)
 {
+    roads.push_back(road(from_->get_GID(),GID_t));
+    roads.back().set_start(-1,-1); // CAN BE CHANGED
+    from_->add_out_road(&(roads.back()));
+
+
+    int x = GID_t%x_size;
+    int y = GID_t/y_size;
+    roads.back().set_end(x,y);
+    intersections[y][x]->add_in_road(&(roads.back()));
+
     return;
 } 
 
 void grid::add_road(int GID_f, bridge_intersection* to)
 {
+    roads.push_back(road(GID_f, to->get_GID()));
+    roads.back().set_end(-1,-1); // CAN BE CHANGED
+    to->add_in_road(&(roads.back()));
+
+
+    int x = GID_f%x_size;
+    int y = GID_f/y_size;
+    roads.back().set_start(x,y);
+    intersections[y][x]->add_out_road(&(roads.back()));
+
     return;
 }
 

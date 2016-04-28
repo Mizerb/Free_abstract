@@ -40,7 +40,7 @@ public:
     void add_road(bridge_intersection* from_, int GID_t);
     void add_road(int GID_f, bridge_intersection* to);
 
-    bridge_intersection* border_road(int GID_f, int GID_t);
+    bridge_intersection* border_road(int GID_f, int GID_t, int other_rank);
 
     int get_displacement()const {return rank_displace;}
     void set_displacement(int dis) { rank_displace = dis;}

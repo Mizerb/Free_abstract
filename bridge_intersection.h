@@ -10,9 +10,12 @@ private:
     int share_rank;
 
 public:
-    bridge_intersection();
+    bridge_intersection(int GID_ , int share_rank_): 
+        intersection(GID_), share_rank(share_rank_) {}
+    /*
     bridge_intersection(int x_, int y_ , int share_rank): 
         intersection(x_,y_) {}
+    */
     //~bridge_intersection();
 
     char type(){ return 'b';}
