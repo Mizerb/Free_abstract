@@ -1,4 +1,4 @@
-
+/*
 
 template<class T>
 class LinkedNode
@@ -37,3 +37,4 @@ class LinkedNode
     
     
 }
+*/
