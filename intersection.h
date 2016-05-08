@@ -2,14 +2,13 @@
 
 #include "LinkedNode.h"
 #include "Road.h"
-#include "Grid_Object.h"
 #include <stdlib.h>
 #include <map>
 
 #ifndef INTERSECTION_H
 #define INTERSECTION_H
 
-class intersection : public Grid_Object
+class intersection
 {
     
 public:

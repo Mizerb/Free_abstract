@@ -2,7 +2,6 @@
 
 #include "includer.h"
 #include <utility>
-#include "Grid_Object.h"
 #include "LinkedNode.h"
 #include <math.h>
 
@@ -11,14 +10,14 @@
 
 class intersection;
 
-class Road : public Grid_Object
+class Road
 {
 private:
     std::pair<int,int> srtcoord;
     std::pair<int,int> endcoord;
     LinkedNode<Car>* head;
     LinkedNode<Car>* tail;
-    Grid_Object * outConnection;
+    intersection * outConnection;
     intersection * out;
     int start; // the crap do these do? // EVERYTHING
     int end;
@@ -40,7 +39,11 @@ public:
     
     void set_start(int x, int y){ srtcoord = std::make_pair(x,y); }
     void set_end  (int x, int y){ endcoord = std::make_pair(x,y); }
-    void set_connection(intersection* mine){out = mine; }
+    void set_connection(intersection* mine)
+    {
+        out = mine; 
+        outConnection = (mine);
+    }
     intersection * get_out() const { return out; }
     bool add_car(Car car)
     {
