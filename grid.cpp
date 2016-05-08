@@ -113,6 +113,8 @@ void grid::add_Road(int GID_f, bridge_intersection* to)
     int y = GID_f/y_size;
     Roads.back().set_start(x,y);
     intersections[y][x]->add_out_Road(&(Roads.back()));
+    
+    Roads.back().set_connection( dynamic_cast<intersection*>(to) );
 
     return;
 }
