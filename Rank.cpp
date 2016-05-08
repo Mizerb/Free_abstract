@@ -55,7 +55,7 @@ void Rank::Add_Roads(int * GIDs, int leng)
         {
             //ADD border Road and stuff
             int other_rank= (GIDs[i+1]/x_world_size)/y_size; 
-            bridge_intersection *a = local_grid->border_Road(GIDs[i], GIDs[i+1], other_rank);
+            Bridge_Intersection *a = local_grid->border_Road(GIDs[i], GIDs[i+1], other_rank);
 
             local_grid->add_Road(GIDs[i] , a);
         }
@@ -63,7 +63,7 @@ void Rank::Add_Roads(int * GIDs, int leng)
         {
             // Add 
             int other_rank= (GIDs[i+1]/x_world_size)/y_size; 
-            bridge_intersection *a = local_grid->border_Road(GIDs[i], GIDs[i+1], other_rank);
+            Bridge_Intersection *a = local_grid->border_Road(GIDs[i], GIDs[i+1], other_rank);
 
             local_grid->add_Road(a , GIDs[i+1]);
         }

@@ -216,10 +216,13 @@ void Genetic::selectData()
 void Genetic::crossover(std::vector<int> &ind1, std::vector<int> &ind2)
 {
     /*
+    //repeated shuffle
+    int nshuffle = abs(gauss(0, 7)) +1, i;
     
-    
-    
-    
+    for ( i = 0; i < nshuffle; ++i )
+    {
+        ind1
+    }
     
     */
 }

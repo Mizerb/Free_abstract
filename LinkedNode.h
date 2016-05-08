@@ -1,9 +1,9 @@
-#include "Car.h"
-#include "includer.h"
-
 
 #ifndef LINKEDNODE_H
 #define LINKEDNODE_H
+
+#include "Car.h"
+#include "includer.h"
 
 template<class T>
 class LinkedNode

@@ -6,28 +6,28 @@
 class BFS_compare
 {
 public:
-    bool operator()(intersection * a, intersection *b )
+    bool operator()(Intersection * a, Intersection *b )
     {
         return (a->dist < b->dist);
     }
 };
 
-void grid::BFS(intersection* root)
+void grid::BFS(Intersection* root)
 {
-    std::priority_queue<intersection*,std::vector<intersection*>, BFS_compare> Q;
+    std::priority_queue<Intersection*,std::vector<Intersection*>, BFS_compare> Q;
     
     
-    for(int i = 0 ; i < intersections.size(); i++)
-      for(int j =0 ; j< intersections[i].size(); j++)
+    for(int i = 0 ; i < Intersections.size(); i++)
+      for(int j =0 ; j< Intersections[i].size(); j++)
     {
-        intersections[i][j]->dist = INT_MAX;
-        Q.push(intersections[i][j]);
+        Intersections[i][j]->dist = INT_MAX;
+        Q.push(Intersections[i][j]);
     }
     
-    for(int i = 0; i < bridges.size() ; i++ )
+    for(int i = 0; i < Bridges.size() ; i++ )
     {
-        bridges[i].dist = INT_MAX;
-        Q.push(dynamic_cast<intersection*>(&bridges[i]));
+        Bridges[i].dist = INT_MAX;
+        Q.push(dynamic_cast<Intersection*>(&Bridges[i]));
     }
     
     root->dist = 0;
@@ -35,10 +35,10 @@ void grid::BFS(intersection* root)
     
     while( not Q.empty() )
     {
-        intersection* local = Q.top(); Q.pop();
+        Intersection* local = Q.top(); Q.pop();
         for( int i=0 ; i < local->outConnections.size() ; i++)
         {
-            intersection* out = this->find_GID(local->outConnections[i]->end_GID());
+            Intersection* out = this->find_GID(local->outConnections[i]->end_GID());
             int alt = local->outConnections[i]->get_weight() + local->dist;
             if( alt < out->dist )
             {
@@ -51,23 +51,23 @@ void grid::BFS(intersection* root)
 }
 
 /*
-void grid::BFS(bridge_intersection* root)
+void grid::BFS(Bridge_Intersection* root)
 {
     
     /*
-    std::priority_queue<intersection*,std::vector<intersection*>, BFS_compare> Q;
-    for(int i = 0 ; i < intersections.size(); i++)
-      for(int j =0 ; j< intersections[i].size(); j++)
+    std::priority_queue<Intersection*,std::vector<Intersection*>, BFS_compare> Q;
+    for(int i = 0 ; i < Intersections.size(); i++)
+      for(int j =0 ; j< Intersections[i].size(); j++)
     {
-        intersections[i][j].dist = INT_MAX;
-        intersections[i][j].prev = NULL;
-        Q.push(intersections[i][j].dist = INT_MAX);
+        Intersections[i][j].dist = INT_MAX;
+        Intersections[i][j].prev = NULL;
+        Q.push(Intersections[i][j].dist = INT_MAX);
     }
     
-    for(int i = 0; i < bridges.size() ; i++ )
+    for(int i = 0; i < Bridges.size() ; i++ )
     {
-        bridges[i].dist = INT_MAX; bridges[i].prev = NULL;
-        Q.push(dynamic_cast<intersection*>(&bridges[i]));
+        Bridges[i].dist = INT_MAX; Bridges[i].prev = NULL;
+        Q.push(dynamic_cast<Intersection*>(&Bridges[i]));
     }
     
     root->dist = 0;
@@ -75,10 +75,10 @@ void grid::BFS(bridge_intersection* root)
     
     while( not Q.empty() )
     {
-        intersection* local = Q.top();
+        Intersection* local = Q.top();
         for( int i=0 ; i < local->outConnections.size() ; i++)
         {
-            intersection* out = local.outConnections[i].get_intersection();
+            Intersection* out = local.outConnections[i].get_Intersection();
             int alt = local.outConnections[i].get_weight() + local.dist;
             if( alt < out->dist )
             {
@@ -93,7 +93,7 @@ void grid::BFS(bridge_intersection* root)
 
 void grid::trace_back(City* path_enda ) //CITY TO CITY
 {
-    intersection* path_end = dynamic_cast<intersection*> (path_enda);
+    Intersection* path_end = dynamic_cast<Intersection*> (path_enda);
     if( path_end->prev == NULL) return; //was not reached
     int GID_to = path_end->GID;
     while( path_end->dist > 0)
@@ -104,9 +104,9 @@ void grid::trace_back(City* path_enda ) //CITY TO CITY
     }
 }
 
-void grid::trace_back(bridge_intersection * path_enda , City * from)  //OUTGOING BRIDGE TO CITY
+void grid::trace_back(Bridge_Intersection * path_enda , City * from)  //OUTGOING BRIDGE TO CITY
 {
-    intersection* path_end = dynamic_cast<intersection*> (path_enda);
+    Intersection* path_end = dynamic_cast<Intersection*> (path_enda);
     if( path_end->prev == NULL) return; //was not reached
     
     int GID_to = path_end->GID;
@@ -119,13 +119,13 @@ void grid::trace_back(bridge_intersection * path_enda , City * from)  //OUTGOING
     }
 }
 
-void grid::trace_back(bridge_intersection * path_enda , bridge_intersection * from) //INCOMING BRIDGE TO OUTGOING BRIDGE
+void grid::trace_back(Bridge_Intersection * path_enda , Bridge_Intersection * from) //INCOMING BRIDGE TO OUTGOING BRIDGE
 {
-    intersection* path_end = dynamic_cast<intersection*> (path_enda);
+    Intersection* path_end = dynamic_cast<Intersection*> (path_enda);
     if( path_end->prev == NULL) return; //was not reached
     
     int GID_to = path_end->GID;
-    path_enda->linked_bridges->push_back(std::make_pair<bridge_intersection*,int>(from,path_end->dist));
+    path_enda->linked_Bridges->push_back(std::make_pair<Bridge_Intersection*,int>(from,path_end->dist));
     while( path_end->dist > 0)
     {
         Road * path = path_end->prev->find_road_to(from->GID);
@@ -134,9 +134,9 @@ void grid::trace_back(bridge_intersection * path_enda , bridge_intersection * fr
     }
 }
 
-void grid::trace_back(City * path_enda , bridge_intersection * from) //CITY TO INCOMING BRIDGE
+void grid::trace_back(City * path_enda , Bridge_Intersection * from) //CITY TO INCOMING BRIDGE
 {
-    intersection* path_end = dynamic_cast<intersection*> (path_enda);
+    Intersection* path_end = dynamic_cast<Intersection*> (path_enda);
     if( path_end->prev == NULL) return; //was not reached
     
     int GID_to = path_end->GID;
@@ -151,31 +151,31 @@ void grid::trace_back(City * path_enda , bridge_intersection * from) //CITY TO I
 
 void grid::write_routes(City* start)
 {
-    intersection * curr; 
+    Intersection * curr; 
     
     for( std::map<int,std::pair<int,int> >::iterator it = (*start->ways_out).begin(); it!=(*start->ways_out).end(); ++it  )
     {
-        curr = dynamic_cast<intersection*> (start);
+        curr = dynamic_cast<Intersection*> (start);
         while(curr->type() != 'b')
         {
             curr->directions[it->first] = curr->directions[it->second.second];
-            intersection * next = curr->directions[it->first]->get_out();
+            Intersection * next = curr->directions[it->first]->get_out();
             curr = next;
         }
     }
 }
 
-void grid::write_routes( bridge_intersection* start)
+void grid::write_routes( Bridge_Intersection* start)
 {
-    intersection * curr; 
+    Intersection * curr; 
     
     for( std::map<int,std::pair<int,int> >::iterator it = (*start->ways_out).begin(); it!=(*start->ways_out).end(); ++it  )
     {
-        curr = dynamic_cast<intersection*> (start);
+        curr = dynamic_cast<Intersection*> (start);
         while(curr->type() != 'b')
         {
             curr->directions[it->first] = curr->directions[it->second.second];
-            intersection * next = curr->directions[it->first]->get_out();
+            Intersection * next = curr->directions[it->first]->get_out();
             curr = next;
         }
     }
@@ -184,69 +184,69 @@ void grid::write_routes( bridge_intersection* start)
 void grid::find_routing() //yes?
 {
     // Find paths to important points in the interior
-    // Set the paths in place in all local intersections
+    // Set the paths in place in all local Intersections
     
-    for(int i=0 ; i < bridges.size() ; i++) bridges[i].route_prep();
+    for(int i=0 ; i < Bridges.size() ; i++) Bridges[i].route_prep();
     
-    //First from all the cities to other cities, and outgoing bridges
+    //First from all the cities to other cities, and outgoing Bridges
     for(int i = 0 ; i <Cities.size(); i++ )
     {
-        BFS(dynamic_cast<intersection*> (Cities[i]));
+        BFS(dynamic_cast<Intersection*> (Cities[i]));
         for(int j = 0 ; j < Cities.size(); j++)
         {
             if(j==i) continue;
             trace_back( Cities[j] );
         }
-        for(int j=0 ; j < bridges.size(); j++)
+        for(int j=0 ; j < Bridges.size(); j++)
         {
-            if( not bridges[j].is_outgoing() ) continue;
-            trace_back( &bridges[j] , Cities[i]);
+            if( not Bridges[j].is_outgoing() ) continue;
+            trace_back( &Bridges[j] , Cities[i]);
         }
     }
-    //Then from all outgoing Bridges to all cities and outoging bridges
-    for(int i =0 ; i<bridges.size(); i++)
+    //Then from all outgoing Bridges to all cities and outoging Bridges
+    for(int i =0 ; i<Bridges.size(); i++)
     {
-        if( not bridges[i].is_incoming()) continue;
+        if( not Bridges[i].is_incoming()) continue;
         
-        BFS(dynamic_cast<intersection*> (&bridges[i]));
+        BFS(dynamic_cast<Intersection*> (&Bridges[i]));
         for(int j = 0 ; j < Cities.size(); j++)
         {
-            trace_back(Cities[j], &bridges[i]);
+            trace_back(Cities[j], &Bridges[i]);
         }
-        for(int j=0 ; j < bridges.size(); j++)
+        for(int j=0 ; j < Bridges.size(); j++)
         {
-            if( not bridges[j].is_outgoing() ) continue;
-            trace_back( &bridges[j] , &bridges[i] );
+            if( not Bridges[j].is_outgoing() ) continue;
+            trace_back( &Bridges[j] , &Bridges[i] );
         }
     }
     //Now that we know all the interior routes in each node,
     //  we tell other ranks how what the routes are. 
-    for(int i=0 ; i < bridges.size() ; i++) bridges[i].work_prep();
+    for(int i=0 ; i < Bridges.size() ; i++) Bridges[i].work_prep();
     for( int i = 0; i< total_ranks ; i++ )
     {
-        for( int j = 0 ; j < bridges.size(); j++)
+        for( int j = 0 ; j < Bridges.size(); j++)
         {
-            if( bridges[j].is_incoming() )
+            if( Bridges[j].is_incoming() )
             {
-                bridges[j].swap_links();
+                Bridges[j].swap_links();
             }
         }
-        for( int j = 0 ; j < bridges.size(); j++)
+        for( int j = 0 ; j < Bridges.size(); j++)
         {
-            if( bridges[j].is_outgoing() )
+            if( Bridges[j].is_outgoing() )
             {
-                bridges[j].swap_links();
-                bridges[j].push_data();
+                Bridges[j].swap_links();
+                Bridges[j].push_data();
             }
         }
     }
     
     for( int i = 0 ; i< Cities.size() ; i++) Cities[i]->Prep_way();
     
-    for( int i = 0 ; i < bridges.size() ; i++)
+    for( int i = 0 ; i < Bridges.size() ; i++)
     {
-        if( not bridges[i].is_outgoing() ) continue;
-        bridges[i].rank_sharing();
+        if( not Bridges[i].is_outgoing() ) continue;
+        Bridges[i].rank_sharing();
     }
     
     for( int i = 0 ; i< Cities.size() ; i++)
@@ -254,14 +254,14 @@ void grid::find_routing() //yes?
         write_routes( Cities[i]);
         //and incoming nodes
     }
-    for( int i = 0 ; i< bridges.size() ; i++)
+    for( int i = 0 ; i< Bridges.size() ; i++)
     {
-        if( not bridges[i].is_incoming()) continue;
-        write_routes( &bridges[i]);
+        if( not Bridges[i].is_incoming()) continue;
+        write_routes( &Bridges[i]);
     }
     
     
     for (int i = 0; i < Cities.size(); i++) delete Cities[i]->ways_out;
-    for(int i=0 ; i < bridges.size() ; i++) bridges[i].route_clean();
+    for(int i=0 ; i < Bridges.size() ; i++) Bridges[i].route_clean();
 }
 

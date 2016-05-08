@@ -8,7 +8,7 @@
 
 #include "Car.h"
 #include "Road.h"
-#include "intersection.h"
+#include "Intersection.h"
 #include "City.h"
 #include "grid.h"
 #include "Rank.h"
@@ -78,8 +78,8 @@ int main(int argc, char** argv){
         for ( member = 0; member < worldInfo -> ga_gen_size; ++member )
         {
             //Generate roads
-            std::vector<int> road_data = myGene->getGraph(member);
-            rankMe->Add_Roads(road_data.data(), road_data.size());
+            std::vector<int> Road_data = myGene->getGraph(member);
+            rankMe->Add_Roads(Road_data.data(), Road_data.size());
         
             //Breadth first search
             rankMe->runSearch();

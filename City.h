@@ -2,10 +2,10 @@
 #define CITY_H
 
 #include "includer.h"
-#include "intersection.h"
+#include "Intersection.h"
 
 
-class City : public intersection{
+class City : public Intersection{
 public:
     char that;
     int population;
@@ -40,8 +40,8 @@ public:
     }
     
     City();
-    City(int GID_, int pop): intersection(GID_) {}
-    City(int x_, int y_, int pop): intersection(x_,y_), population(pop) {received=0;}
+    City(int GID_, int pop): Intersection(GID_) {}
+    City(int x_, int y_, int pop): Intersection(x_,y_), population(pop) {received=0;}
     ~City();
     int getPop(){return population;}
     

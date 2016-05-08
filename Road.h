@@ -1,105 +1,53 @@
 /*ROAD.h */
 
+#ifndef ROAD_H
+#define ROAD_H
+
 #include "includer.h"
 #include <utility>
 #include "LinkedNode.h"
 #include <math.h>
+#include "Car.h"
+#include "Intersection.h"
 
-#ifndef ROAD_H
-#define ROAD_H
+class Intersection;
 
-class intersection;
+template<class T>
+class LinkedNode;
 
 class Road
 {
-private:
+public:
     std::pair<int,int> srtcoord;
     std::pair<int,int> endcoord;
     LinkedNode<Car>* head;
     LinkedNode<Car>* tail;
-    intersection * outConnection;
-    intersection * out;
+    Intersection * outConnection;
+    Intersection * out;
     int start; // the crap do these do? // EVERYTHING
     int end;
     int capacity;
-public:
     int count;
 
     int end_GID() const { return end; }
-    int get_weight() const
-    {
-        return (int) sqrt(((srtcoord.first - endcoord.first)
-            *(srtcoord.first - endcoord.first))
-            + ((srtcoord.second - endcoord.second)
-            *(srtcoord.second - endcoord.second)));
-    }
+    int get_weight() const;
 
     Road(int start_, int finish_): start(start_) , end(finish_) {}
     //~Road();
     
     void set_start(int x, int y){ srtcoord = std::make_pair(x,y); }
     void set_end  (int x, int y){ endcoord = std::make_pair(x,y); }
-    void set_connection(intersection* mine)
-    {
-        out = mine; 
-        outConnection = (mine);
-    }
-    intersection * get_out() const { return out; }
-    bool add_car(Car car)
-    {
-        if(count<capacity)
-        {
-            count++;
-            LinkedNode<Car>* new_node = new LinkedNode<Car>(car);
-            if(head == NULL)
-            {
-                head = new_node;
-                tail = new_node;
-                return true;
-            }
-            if(tail != NULL)
-                this->tail->next = new_node;
-                new_node->prev = tail;
-            this->tail = new_node;
-            return true;
-        } else {
-            return false;
-        }
-    }
+    void set_connection(Intersection* mine);
     
-    void process_cars()
-    {
-        LinkedNode<Car> * targ = head;
-        while(targ != NULL)
-        {
-            count--;
-            LinkedNode<Car> * currNode = targ;
-            Car currCar = currNode->data;
-            outConnection->add_car(currCar);
-            targ = currNode->next;
-            currNode->prev->next = currNode->next;
-            delete(currNode);
-        }
-        return;
-    }
+    Intersection * get_out() const { return out; }
     
-    LinkedNode<Car>* getHead()
-    {
-        LinkedNode<Car> *head_ = this->head;
-        this->head = head_->next;
-        head_->next = NULL;
-        return head_;
-    }
+    bool add_car(Car car);
     
-    ~Road()
-    {
-        while(head!=NULL)
-        {
-            LinkedNode<Car>* temp = head;
-            head = head->next;
-            delete temp;
-        }
-    }
+    void process_cars();
+    
+    LinkedNode<Car>* getHead();
+    
+    ~Road();
       
 };
 

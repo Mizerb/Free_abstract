@@ -4,9 +4,9 @@
 #define GRID_H
 
 #include "includer.h"
-#include "intersection.h"
+#include "Intersection.h"
 #include "City.h"
-#include "bridge_intersection.h"
+#include "Bridge_Intersection.h"
 #include "Road.h"
 #include "Info.h"
 
@@ -20,10 +20,10 @@ private:
     
     
 
-    std::vector<std::vector<intersection*> > intersections;
+    std::vector<std::vector<Intersection*> > Intersections;
     std::vector<City*> Cities;
 
-    std::vector<bridge_intersection> bridges;
+    std::vector<Bridge_Intersection> Bridges;
 
     std::vector<Road> Roads;
 public:
@@ -40,16 +40,16 @@ public:
 
     void add_Road(int GID_f , int GID_t);
 
-    void add_Road(bridge_intersection* from_, int GID_t);
-    void add_Road(int GID_f, bridge_intersection* to);
+    void add_Road(Bridge_Intersection* from_, int GID_t);
+    void add_Road(int GID_f, Bridge_Intersection* to);
 
-    bridge_intersection* border_Road(int GID_f, int GID_t, int other_rank);
+    Bridge_Intersection* border_Road(int GID_f, int GID_t, int other_rank);
 
     int get_displacement()const {return rank_displace;}
     
     void set_displacement(int dis) { rank_displace = dis;}
     
-    intersection * find_GID(int GID);
+    Intersection * find_GID(int GID);
     
     //The Grid is constant
     
@@ -62,18 +62,18 @@ public:
     void printCities();
     
     std::vector<City*> getCities();
-    void BFS(intersection* root);
-    //void BFS(bridge_intersection* root);
+    void BFS(Intersection* root);
+    //void BFS(Bridge_Intersection* root);
     void find_routing();
     
     
     void write_routes( City* start);
-    void write_routes( bridge_intersection* start);
+    void write_routes( Bridge_Intersection* start);
     
     void trace_back(City* path_end );
-    void trace_back(bridge_intersection * path_end , City * from);
-    void trace_back(bridge_intersection * path_end , bridge_intersection * from);
-    void trace_back(City * path_end , bridge_intersection * from);
+    void trace_back(Bridge_Intersection * path_end , City * from);
+    void trace_back(Bridge_Intersection * path_end , Bridge_Intersection * from);
+    void trace_back(City * path_end , Bridge_Intersection * from);
 
     
     int total_ranks;
