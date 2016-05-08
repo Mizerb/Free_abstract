@@ -4,6 +4,7 @@
 #include "Road.h"
 #include "Grid_Object.h"
 #include <stdlib.h>
+#include <map>
 
 #ifndef INTERSECTION_H
 #define INTERSECTION_H
