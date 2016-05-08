@@ -1,6 +1,7 @@
 #ifndef RANK_H
 #define RANK_H
 
+#include "Info.h"
 #include "includer.h"
 #include "grid.h"
 #include "mpi.h"
@@ -8,13 +9,8 @@
 
 class Rank
 {
-    int my_rank;
-    int mpi_comm_size;
-
     int x_world_size;
     int y_world_size;
-
-    int y_size;
 
 
     grid * local_grid;
@@ -24,6 +20,12 @@ class Rank
     int GID_to_y(int GID);
 
 public:
+    
+    int y_size;
+    int my_rank;
+    int mpi_comm_size;
+
+
     Rank(int x_world_size , int y_world_size);
     ~Rank();
     
@@ -38,6 +40,21 @@ public:
     void Send_Result();
 
     void Reset_Sim();
+    
+    void printCities();
+    
+    std::vector<City*> getCities();
+    
+    void runSearch()
+    {
+        local_grid->find_routing();
+    }
+    
+    /* Think this is the same as Reset_Sim();
+    void Road_Reset()
+    {
+        local_grid->Road_reset();
+    }*/
 
 };
 

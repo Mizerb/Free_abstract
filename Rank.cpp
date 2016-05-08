@@ -20,6 +20,7 @@ Rank::Rank(int x_world_size_ , int y_world_size_)
 
     local_grid = new grid(x_world_size , y_size);
     local_grid->set_displacement( y_size*x_world_size*my_rank) /*MATH*/;
+    local_grid->total_ranks = mpi_comm_size;
 }
 
 void Rank::City_Start(int * cities_, int leng)
@@ -27,9 +28,12 @@ void Rank::City_Start(int * cities_, int leng)
     int x, y, pop;
     for(int i = 0 ; i < leng ; i +=3)
     {
+        
         x = cities_[i]; y = cities_[i+1];
-        if( y/mpi_comm_size == my_rank )
+        pop = cities_[i+2];
+        if( y/y_size == my_rank )
         {
+            printf("%d %d %d\n", cities_[i], cities_[i+1], cities_[i+2]);
             local_grid->add_city(x, y%y_size , pop);
         }
     }
@@ -45,23 +49,23 @@ void Rank::Add_Roads(int * GIDs, int leng)
         if( in_grid(GIDs[i]) && in_grid(GIDs[i+1]))
         {
             //int x1 = GID_to_x(), y1=GID_to_y(), x2=GID_to_x(), y2=GID_to_y(); 
-            local_grid->add_road( GIDs[i], GIDs[i+1]);
+            local_grid->add_Road( GIDs[i], GIDs[i+1]);
         }
         else if(in_grid(GIDs[i]) )
         {
-            //ADD border road and stuff
+            //ADD border Road and stuff
             int other_rank= (GIDs[i+1]/x_world_size)/y_size; 
-            bridge_intersection *a = local_grid->border_road(GIDs[i], GIDs[i+1], other_rank);
+            bridge_intersection *a = local_grid->border_Road(GIDs[i], GIDs[i+1], other_rank);
 
-            local_grid->add_road(GIDs[i] , a);
+            local_grid->add_Road(GIDs[i] , a);
         }
         else if(in_grid(GIDs[i+1]))
         {
             // Add 
             int other_rank= (GIDs[i+1]/x_world_size)/y_size; 
-            bridge_intersection *a = local_grid->border_road(GIDs[i], GIDs[i+1], other_rank);
+            bridge_intersection *a = local_grid->border_Road(GIDs[i], GIDs[i+1], other_rank);
 
-            local_grid->add_road(a , GIDs[i+1]);
+            local_grid->add_Road(a , GIDs[i+1]);
         }
     }
 }
@@ -72,19 +76,29 @@ void Rank::Add_Roads(int * GIDs, int leng)
 void Rank::Run_Sim()
 {
     //Take it away Aaron!!!!
+    MPI_Barrier(MPI_COMM_WORLD);
+    for(int x = 0; x<1000;x++)
+    {
+        local_grid->run_Tick();
+        MPI_Barrier(MPI_COMM_WORLD);
+    }
+    
+    
+    
     return;
 }
 
 void Rank::Send_Result()
 {
     //take it away Chris!!!!
+    // THe hell am I taking away here?
     return;
 }
 
 void Rank::Reset_Sim()
 {
     //Oh this is my job (Ben)
-    local_grid->road_reset();
+    local_grid->Road_reset();
     //Done
     return;
 }
@@ -104,4 +118,13 @@ int Rank::GID_to_x(int GID)
 int Rank::GID_to_y(int GID)
 {
     return GID/(x_world_size);
+}
+
+void Rank::printCities()
+{
+    local_grid->printCities();
+}
+
+std::vector<City*> Rank::getCities(){
+    return local_grid->getCities();
 }

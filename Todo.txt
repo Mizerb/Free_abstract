@@ -14,3 +14,6 @@ Benjamin Mizera:
     Cities are created and saves (somewhere)
     intersection have to be made relevent (???)
     
+    
+Chris
+    (y*x_max+x) + mpi_rank*x_max*y_max

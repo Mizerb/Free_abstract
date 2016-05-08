@@ -1,4 +1,5 @@
 #include "Car.h"
+#include "includer.h"
 
 
 #ifndef LINKEDNODE_H
@@ -12,20 +13,15 @@ public:
     LinkedNode()
     {
         //default contructor
-    }
-    
-    LinkedNode<T> getHead()
-    {
-        LinkedNode<T> *head = this->head;
-        this->head = head->next;
-        head->next = NULL;
-        return head;
+        next = NULL;
+        prev = NULL;
     }
     
     LinkedNode(T indata)
     {
         data = indata;
         next = NULL;
+        prev = NULL;
     }
     
     LinkedNode<T>* DeleteAfter()
@@ -41,7 +37,7 @@ public:
     
     
     LinkedNode<T> * next;
-    
+    LinkedNode<T> * prev;
 
     
     
