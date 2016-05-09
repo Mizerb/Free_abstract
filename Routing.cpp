@@ -52,6 +52,8 @@ void grid::BFS(Intersection* root)
         for( int i=0 ; i < local->outConnections.size() ; i++)
         {
             Intersection* out = local->outConnections[i]->out;
+            it = Q.find( out);
+            if( it == Q.end() ) continue;
             if( out == NULL) printf("shit\n");
             //printf("out test %d\n" ,local->outConnections[i]->start);
             int alt = local->outConnections[i]->get_weight() + local->dist;
@@ -63,6 +65,7 @@ void grid::BFS(Intersection* root)
                 if( it == Q.end() )
                 {
                   printf( "LInked to intersec not in Q...\n");
+                  printf( "GID of OUT: %d\n" ,out->GID );
                   Q.insert(out);  
                 } 
                 else Q.erase(out);Q.insert(out);
@@ -328,5 +331,7 @@ void grid::find_routing() //yes?
     {
         Intersections[i][j]->add_options();
     }
+    
+    printf("routed successfully\n");
 }
 
