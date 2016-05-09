@@ -3,6 +3,7 @@
 
 int Road::get_weight() const
 {
+    if( weight != -1 ) return weight;
     return (int) sqrt(((srtcoord.first - endcoord.first)
         *(srtcoord.first - endcoord.first))
         + ((srtcoord.second - endcoord.second)

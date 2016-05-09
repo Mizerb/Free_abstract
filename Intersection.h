@@ -38,7 +38,7 @@ public:
     int GID; //Grid ID
     Intersection(int x, int y, int GID_);
      Intersection(int x, int y);
-    Intersection(int GID_) : GID(GID_){}
+    Intersection(int GID_) : GID(GID_), head(NULL) , x_(-1), y_(-1) {}
     ~Intersection();
     
     void add_out_Road(Road*);
@@ -52,7 +52,7 @@ public:
     
     Road* find_road_to( int GID);	
     void del_cars();
-    void clear_connections() { outConnections.clear(); inConnections.clear(); }
+    void clear_connections() { return; outConnections.clear(); inConnections.clear(); }
     
     void add_options();
 };

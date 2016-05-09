@@ -1,12 +1,12 @@
 #include "grid.h"
 #include <climits>
 #include <queue>
-
+#include <set>
 
 class BFS_compare
 {
 public:
-    bool operator()(Intersection * a, Intersection *b )
+    bool operator()( Intersection * a, Intersection *b )
     {
         return (a->dist < b->dist);
     }
@@ -14,40 +14,52 @@ public:
 
 void grid::BFS(Intersection* root)
 {
-    std::priority_queue<Intersection*,std::vector<Intersection*>, BFS_compare> Q;
+    //std::priority_queue<Intersection*,std::vector<Intersection*>, BFS_compare> Q;
     
+    std::set<Intersection*, BFS_compare> Q;
+    std::set<Intersection*, BFS_compare>::iterator it;
+
+
     printf("Setting everything to zero\n");
     for(int i = 0 ; i < Intersections.size(); i++)
       for(int j =0 ; j< Intersections[i].size(); j++)
     {
         Intersections[i][j]->dist = INT_MAX;
-        Q.push(Intersections[i][j]);
+        Q.insert(Intersections[i][j]);
     }
     
     for(int i = 0; i < Bridges.size() ; i++ )
     {
         Bridges[i].dist = INT_MAX;
-        Q.push(dynamic_cast<Intersection*>(&Bridges[i]));
+        Q.insert(dynamic_cast<Intersection*>(&Bridges[i]));
     }
     
-    root->dist = 0;
-    
-    if( Q.top()->dist != 0 )
+    it = Q.find( root);
+
+
+    if( it == Q.end() )
     {
-        printf( "Non zero top value\n");
+        printf( "Non zero top value \n");
         exit(1);
     }
+
+    root->dist = 0;
+    Q.erase(it); Q.insert(root);
+    printf("into the BFS\n");
     while( not Q.empty() )
     {
-        Intersection* local = Q.top(); Q.pop();
+        Intersection* local = *(Q.begin()); Q.erase(local);
         for( int i=0 ; i < local->outConnections.size() ; i++)
         {
-            Intersection* out = this->find_GID(local->outConnections[i]->end_GID());
+            Intersection* out = local->outConnections[i]->out;
+            if( out == NULL) printf("shit\n");
+            printf("out test %d\n" ,local->outConnections[i]->start);
             int alt = local->outConnections[i]->get_weight() + local->dist;
             if( alt < out->dist )
             {
                 out -> dist = alt;
                 out -> prev = local;
+                Q.erase(out);Q.insert(out);
             }
         }
     }
@@ -185,6 +197,21 @@ void grid::write_routes( Bridge_Intersection* start)
     }
 }
 
+void grid::safty_dance()
+{
+  for(int i = 0 ; i < Intersections.size() ; i++)
+    for(int j = 0 ; j < Intersections[i].size() ; j++)
+  {
+    if( Intersections[i][j]->outConnections.size() ==0 ) continue;
+    if( Intersections[i][j]->GID !=  Intersections[i][j]->outConnections[0]->start)
+    {
+        printf("Pissing Piles of Precum\n");
+        printf( "X: %d Y: %d , end: %p\n" , j , i , Intersections[i][j]->outConnections[0]->out);
+    }
+    else printf("safe X :%d  Y: %d  end:%p \n", j,i ,Intersections[i][j]->outConnections[0]->out );
+  }
+}
+
 void grid::find_routing() //yes?
 {
     // Find paths to important points in the interior
@@ -194,6 +221,13 @@ void grid::find_routing() //yes?
     printf("basic prep done\n");
     //First from all the cities to other cities, and outgoing Bridges
     
+    
+    //for( int i = 0 ; i< Roads.size() ; i++) printf("ROADING %d\n", Roads[i].out->GID);
+    
+    safty_dance();
+
+
+
     printf("BFS time\n");
     for(int i = 0 ; i <Cities.size(); i++ )
     {

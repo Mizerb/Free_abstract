@@ -49,29 +49,36 @@ void Rank::Add_Roads(int * GIDs, int leng)
         if( in_grid(GIDs[i]) && in_grid(GIDs[i+1]))
         {
             //int x1 = GID_to_x(), y1=GID_to_y(), x2=GID_to_x(), y2=GID_to_y(); 
-            printf("start\n");
+            ////printf("start\n");
+            if( GIDs[i] == GIDs[i+1])
+            {
+                printf("Intersections can't lead to themselves\n");
+                continue;
+            }
             local_grid->add_Road( GIDs[i], GIDs[i+1]);
-            printf("finish\n");
+            //printf("finish\n");
         }
         else if(in_grid(GIDs[i]) )
         {
             //ADD border Road and stuff
-            printf("shit\n");
+            //printf("shit a\n");
             int other_rank= (GIDs[i+1]/x_world_size)/y_size; 
             Bridge_Intersection *a = local_grid->border_Road(GIDs[i], GIDs[i+1], other_rank);
 
-            local_grid->add_Road(GIDs[i] , a);
+            local_grid->add_Road(GIDs[i] , a , GIDs[i+1]);
         }
         else if(in_grid(GIDs[i+1]))
         {
             // Add 
-            printf("shit\n");
+            //printf("shit b\n");
             int other_rank= (GIDs[i+1]/x_world_size)/y_size; 
             Bridge_Intersection *a = local_grid->border_Road(GIDs[i], GIDs[i+1], other_rank);
 
-            local_grid->add_Road(a , GIDs[i+1]);
+            local_grid->add_Road(a , GIDs[i+1], GIDs[i]);
         }
     }
+
+    local_grid->safty_dance();
 }
 
 
@@ -110,7 +117,14 @@ void Rank::Reset_Sim()
 bool Rank::in_grid(int GID)
 {
     int GID_rank = (GID/x_world_size)/y_size;
-
+    /*
+    if( GID_rank != 0)
+    {
+        printf( "GID: %d , ysize: %d , xsize: %d\n", GID, y_size, x_world_size );
+        printf( "f: %d  s: %d",GID/x_world_size, (GID/x_world_size)/y_size );
+        exit(1);
+    }
+    */
     return (GID_rank == my_rank);
 }
 

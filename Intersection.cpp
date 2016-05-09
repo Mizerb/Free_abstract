@@ -49,6 +49,7 @@ Intersection::Intersection( int x, int y , int GID_)
     x_ = x;
     y_ = y;
     GID = GID_;
+    head = NULL;
     return;
 }
 
@@ -56,6 +57,7 @@ Intersection::Intersection( int x, int y )
 {
     x_ = x;
     y_ = y;
+    head = NULL;
     return;
 }
 
@@ -64,11 +66,15 @@ Intersection::Intersection( int x, int y )
 void Intersection::add_out_Road(Road* new_Road)
 {
     outConnections.push_back(new_Road);
+    new_Road->start = GID;
+    new_Road->set_start(x_,y_);
 }
 
 void Intersection::add_in_Road(Road* new_Road)
 {
     inConnections.push_back(new_Road);
+    new_Road->end = GID;
+    new_Road->set_end(x_,y_);
 }
 
 Road * Intersection::find_road_to(int GID)

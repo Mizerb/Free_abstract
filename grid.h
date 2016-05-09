@@ -40,8 +40,8 @@ public:
 
     void add_Road(int GID_f , int GID_t);
 
-    void add_Road(Bridge_Intersection* from_, int GID_t);
-    void add_Road(int GID_f, Bridge_Intersection* to);
+    void add_Road(Bridge_Intersection* from_, int GID_t, int GID_f);
+    void add_Road(int GID_f, Bridge_Intersection* to, int GID_t);
 
     Bridge_Intersection* border_Road(int GID_f, int GID_t, int other_rank);
 
@@ -75,7 +75,8 @@ public:
     void trace_back(Bridge_Intersection * path_end , Bridge_Intersection * from);
     void trace_back(City * path_end , Bridge_Intersection * from);
 
-    
+    void safty_dance();
+
     int total_ranks;
 };
 
