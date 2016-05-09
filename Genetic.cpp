@@ -172,7 +172,7 @@ std::pair<int, int> Genetic::randomRoad
         if ( x < 0 ) x = 0;
         else if ( x >= _args.world_x_size ) x = _args.world_x_size - 1;
         if ( y < _args.world_slice_pos ) y = _args.world_slice_pos;
-        else if ( y > _args.world_slice_pos+_args.world_slice_size ) y = _args.world_slice_pos + _args.world_slice_size;
+        else if ( y > _args.world_slice_pos+_args.world_slice_size -1 ) y = _args.world_slice_pos + _args.world_slice_size - 2;
         
         //fprintf(stderr, "randomRoad first if after initilization\n");
         
