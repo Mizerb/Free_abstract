@@ -50,7 +50,8 @@ public:
     int get_GID() const{ return GID;} // should I not?
     int send_lookup (int dest) const;
     
-    Road* find_road_to( int GID);	
+    Road* find_road_to( int GID);
+    Road* find_road_to( Intersection * a);	
     void del_cars();
     void clear_connections() { return; outConnections.clear(); inConnections.clear(); }
     

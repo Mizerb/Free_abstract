@@ -25,12 +25,14 @@ void grid::BFS(Intersection* root)
       for(int j =0 ; j< Intersections[i].size(); j++)
     {
         Intersections[i][j]->dist = INT_MAX;
+        Intersections[i][j]->prev = NULL;
         Q.insert(Intersections[i][j]);
     }
     
     for(int i = 0; i < Bridges.size() ; i++ )
     {
         Bridges[i].dist = INT_MAX;
+        Bridges[i].prev = NULL;
         Q.insert(dynamic_cast<Intersection*>(&Bridges[i]));
     }
     
@@ -121,12 +123,14 @@ void grid::trace_back(City* path_enda ) //CITY TO CITY
 {
     Intersection* path_end = dynamic_cast<Intersection*> (path_enda);
     if( path_end->prev == NULL) return; //was not reached
+    printf(" Got 1\n");
     int GID_to = path_end->GID;
     while( path_end->dist > 0)
     {
-        Road * path = path_end->prev->find_road_to(path_end->GID);
+        Road * path = path_end->prev->find_road_to(path_end);
         path_end->prev->directions[GID_to] = path;
         path_end = path_end->prev;
+        printf("moved back");
     }
 }
 

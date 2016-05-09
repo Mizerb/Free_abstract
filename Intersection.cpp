@@ -87,6 +87,16 @@ Road * Intersection::find_road_to(int GID)
     exit(1);
 }
 
+Road * Intersection::find_road_to( Intersection * me)
+{
+    for(int i = 0; i< outConnections.size(); i++)
+    {
+        if( outConnections[i]->out == me ) return outConnections[i];
+    }
+    fprintf(stderr,"Connection does not exist\n");
+    exit(1);
+}
+
 void Intersection::del_cars()
 {
     while(head!=NULL)
