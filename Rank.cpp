@@ -61,7 +61,8 @@ void Rank::Add_Roads(int * GIDs, int leng)
         else if(in_grid(GIDs[i]) )
         {
             //ADD border Road and stuff
-            //printf("shit a\n");
+            
+            printf("shit a GID:%d\n", GIDs[i+1]);
             int other_rank= (GIDs[i+1]/x_world_size)/y_size; 
             Bridge_Intersection *a = local_grid->border_Road(GIDs[i], GIDs[i+1], other_rank);
 
@@ -71,6 +72,7 @@ void Rank::Add_Roads(int * GIDs, int leng)
         {
             // Add 
             //printf("shit b\n");
+            printf("shit a GID:%d\n", GIDs[i]);
             int other_rank= (GIDs[i+1]/x_world_size)/y_size; 
             Bridge_Intersection *a = local_grid->border_Road(GIDs[i], GIDs[i+1], other_rank);
 
@@ -78,7 +80,7 @@ void Rank::Add_Roads(int * GIDs, int leng)
         }
     }
 
-    local_grid->safty_dance();
+    //local_grid->safty_dance();
 }
 
 

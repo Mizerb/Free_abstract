@@ -51,6 +51,7 @@ public:
     
     Intersection * find_GID(int GID);
     
+    void path_testing( Intersection* start , int target_GID);    
     //The Grid is constant
     
     //The Grid does not change it's parameters
