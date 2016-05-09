@@ -39,12 +39,13 @@ std::vector<int> Genetic::getGraph (int ind) {
     int i;
     // idiot checking
     if ( ind < 0 || ind >= _args.ga_gen_size ) {
+        fprintf(stderr, "Index out of range!");
         throw "IndexOutOfRangeYouIdiotException";
     }
     // generate initial population if plausible
     while ( ind >= _roads.size() )
     {
-        //fprintf(stderr, "GetGraph while loop\n");
+        fprintf(stderr, "GetGraph while loop\n");
         
         _roads.push_back(generateRoads());
     }
