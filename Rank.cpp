@@ -18,7 +18,7 @@ Rank::Rank(int x_world_size_ , int y_world_size_)
     */
     //Do I worry about crossing otherwise? How? 
 
-    local_grid = new grid(x_world_size , y_size);
+    local_grid = new grid(x_world_size , y_size, y_size*x_world_size*my_rank);
     local_grid->set_displacement( y_size*x_world_size*my_rank) /*MATH*/;
     local_grid->total_ranks = mpi_comm_size;
 }
@@ -33,7 +33,7 @@ void Rank::City_Start(int * cities_, int leng)
         pop = cities_[i+2];
         if( y/y_size == my_rank )
         {
-            printf("%d %d %d\n", cities_[i], cities_[i+1], cities_[i+2]);
+            //printf("City %d: %d %d %d\n", i/3,cities_[i], cities_[i+1], cities_[i+2]);
             local_grid->add_city(x, y%y_size , pop);
         }
     }
@@ -49,11 +49,14 @@ void Rank::Add_Roads(int * GIDs, int leng)
         if( in_grid(GIDs[i]) && in_grid(GIDs[i+1]))
         {
             //int x1 = GID_to_x(), y1=GID_to_y(), x2=GID_to_x(), y2=GID_to_y(); 
+            printf("start\n");
             local_grid->add_Road( GIDs[i], GIDs[i+1]);
+            printf("finish\n");
         }
         else if(in_grid(GIDs[i]) )
         {
             //ADD border Road and stuff
+            printf("shit\n");
             int other_rank= (GIDs[i+1]/x_world_size)/y_size; 
             Bridge_Intersection *a = local_grid->border_Road(GIDs[i], GIDs[i+1], other_rank);
 
@@ -62,6 +65,7 @@ void Rank::Add_Roads(int * GIDs, int leng)
         else if(in_grid(GIDs[i+1]))
         {
             // Add 
+            printf("shit\n");
             int other_rank= (GIDs[i+1]/x_world_size)/y_size; 
             Bridge_Intersection *a = local_grid->border_Road(GIDs[i], GIDs[i+1], other_rank);
 

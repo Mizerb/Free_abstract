@@ -16,7 +16,7 @@ void grid::BFS(Intersection* root)
 {
     std::priority_queue<Intersection*,std::vector<Intersection*>, BFS_compare> Q;
     
-    
+    printf("Setting everything to zero\n");
     for(int i = 0 ; i < Intersections.size(); i++)
       for(int j =0 ; j< Intersections[i].size(); j++)
     {
@@ -32,7 +32,11 @@ void grid::BFS(Intersection* root)
     
     root->dist = 0;
     
-    
+    if( Q.top()->dist != 0 )
+    {
+        printf( "Non zero top value\n");
+        exit(1);
+    }
     while( not Q.empty() )
     {
         Intersection* local = Q.top(); Q.pop();
@@ -185,17 +189,23 @@ void grid::find_routing() //yes?
 {
     // Find paths to important points in the interior
     // Set the paths in place in all local Intersections
-    
+    printf("basic prep\n");
     for(int i=0 ; i < Bridges.size() ; i++) Bridges[i].route_prep();
-    
+    printf("basic prep done\n");
     //First from all the cities to other cities, and outgoing Bridges
+    
+    printf("BFS time\n");
     for(int i = 0 ; i <Cities.size(); i++ )
     {
+        printf("Running BFS\n");
         BFS(dynamic_cast<Intersection*> (Cities[i]));
+        printf("completed BFS\n");
         for(int j = 0 ; j < Cities.size(); j++)
         {
             if(j==i) continue;
+            printf("Performing back trace\n");
             trace_back( Cities[j] );
+            printf("Back Trace worked\n");
         }
         for(int j=0 ; j < Bridges.size(); j++)
         {
@@ -219,8 +229,10 @@ void grid::find_routing() //yes?
             trace_back( &Bridges[j] , &Bridges[i] );
         }
     }
+    printf("end of BFS time\n");
     //Now that we know all the interior routes in each node,
     //  we tell other ranks how what the routes are. 
+     printf("swapping links\n");
     for(int i=0 ; i < Bridges.size() ; i++) Bridges[i].work_prep();
     for( int i = 0; i< total_ranks ; i++ )
     {
@@ -228,25 +240,32 @@ void grid::find_routing() //yes?
         {
             if( Bridges[j].is_incoming() )
             {
+               
                 Bridges[j].swap_links();
+                printf("sent out the links\n");
             }
         }
+        printf("send all links\n");
         for( int j = 0 ; j < Bridges.size(); j++)
         {
             if( Bridges[j].is_outgoing() )
             {
+                printf("Might encounter blocking here, receving all sends\n");
                 Bridges[j].swap_links();
+                printf("Receieved all sends successfully\n");
                 Bridges[j].push_data();
             }
         }
     }
-    
+    printf("MPI messaged finished(correctly?)\n");
     for( int i = 0 ; i< Cities.size() ; i++) Cities[i]->Prep_way();
     
     for( int i = 0 ; i < Bridges.size() ; i++)
     {
         if( not Bridges[i].is_outgoing() ) continue;
+        printf("RUNNING CLUSTERFUCK\n");
         Bridges[i].rank_sharing();
+        printf("FINISHED RUNNING CLUSTERFUCK\n");
     }
     
     for( int i = 0 ; i< Cities.size() ; i++)
@@ -263,5 +282,10 @@ void grid::find_routing() //yes?
     
     for (int i = 0; i < Cities.size(); i++) delete Cities[i]->ways_out;
     for(int i=0 ; i < Bridges.size() ; i++) Bridges[i].route_clean();
+    for(int i = 0 ; i < Intersections.size() ; i++)
+      for( int j = 0 ; j < Intersections[i].size() ; j++)
+    {
+        Intersections[i][j]->add_options();
+    }
 }
 

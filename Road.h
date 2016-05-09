@@ -3,6 +3,7 @@
 #ifndef ROAD_H
 #define ROAD_H
 
+#include "GridObject.h"
 #include "includer.h"
 #include <utility>
 #include "LinkedNode.h"
@@ -10,12 +11,11 @@
 #include "Car.h"
 #include "Intersection.h"
 
+
 class Intersection;
 
-template<class T>
-class LinkedNode;
 
-class Road
+class Road : public GridObject
 {
 public:
     std::pair<int,int> srtcoord;

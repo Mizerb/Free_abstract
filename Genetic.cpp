@@ -44,6 +44,8 @@ std::vector<int> Genetic::getGraph (int ind) {
     // generate initial population if plausible
     while ( ind >= _roads.size() )
     {
+        //fprintf(stderr, "GetGraph while loop\n");
+        
         _roads.push_back(generateRoads());
     }
 
@@ -63,14 +65,21 @@ std::vector<int> Genetic::generateRoads()
     std::set<int> visit_b;
     int i;
     std::vector<City*>::iterator it;
+    
+    //fprintf(stderr, "GenerateRoads init\n");
+    
     for ( it = _cities.begin(), i = 0; it != _cities.end(); ++it, ++i )
     {
         std::vector<int> next_city;
+        std::pair<int,int> loc((*it)->x_,(*it)->y_);
         next_city.push_back(i);
         connect[i] = next_city;
 
-        endpoints[std::make_pair((*it)->x_,(*it)->y_)] = i;
+        endpoints[loc] = i;
+        points.push_back(loc);
     }
+    
+    //fprintf(stderr, "GenerateRoads after first for loop\n");
     
     if ( _args.neighbors[0] < 0 )
     {
@@ -89,6 +98,8 @@ std::vector<int> Genetic::generateRoads()
     {
         MPI_Irecv( &x_border, 1, MPI_INT, _args.neighbors[1], _comm_tag, MPI_COMM_WORLD, &(connection[1]) );
     }
+    
+    //fprintf(stderr, "GenerateRoads after if statements\n");
     
     while ( !(success[0] && success[1] && success[2]) )
     {
@@ -109,11 +120,17 @@ std::vector<int> Genetic::generateRoads()
                 }
             }
         }
+        //fprintf(stderr, "GenerateRoads primary while loop after if statements\n");
+        
         next_road = randomRoad(points, endpoints, connect, visit_b, success);
+        
+        //fprintf(stderr, "GenerateRoads primary while loop After 'randomRoad'\n");
+        
         graph.push_back(next_road.first);
         graph.push_back(next_road.second);
         
     }
+    fprintf(stderr, "GenerateRoads finished\n");
 
     return graph;
 }
@@ -128,21 +145,38 @@ std::pair<int, int> Genetic::randomRoad
     int (&connected)[3]
 )
 {
-    std::pair<int,int> *eptr, *eptr2, p;
+    std::pair<int,int> eptr, eptr2;
     // first try to connect two random endpoints
-    eptr = &points[(int) (rand()*points.size())];
-    eptr2 = &points[(int) (rand()*points.size())];
-    // random walk and add roads
-    if ( eptr += eptr2 || abs(eptr->first - eptr2->first) > abs(gauss(0, _gaussian_sigma)) || abs(eptr->second - eptr2->second) > abs(gauss(0, _gaussian_sigma)) )
+    if ( points.size() > 0 )
     {
-        int x = (int) gauss(eptr->first+0.5, _gaussian_sigma);
-        int y = (int) gauss(eptr->second+0.5, _gaussian_sigma);
+        eptr = points[(int) (rand()*points.size())%points.size()];
+        eptr2 = points[(int) (rand()*points.size())%points.size()];
+    }
+    else
+    {
+        eptr2 = eptr = std::make_pair( (int) rand()*_args.world_x_size, (int) rand()*_args.world_slice_size + _args.world_slice_pos );
+    }
+    // random walk and add roads
+    
+    //fprintf(stderr,"randomRoad after intitialisation\n");
+    
+    if ( eptr == eptr2 || abs(eptr.first - eptr2.first) > abs(gauss(0, _gaussian_sigma)) || abs(eptr.second - eptr2.second) > abs(gauss(0, _gaussian_sigma)) )
+    {
+        //fprintf(stderr, "randomRoad entering first if statement with %d, %d\n", eptr.first, eptr.second);
+        
+        int x = (int) gauss(eptr.first + 0.5, _gaussian_sigma);
+        int y = (int) gauss(eptr.second + 0.5, _gaussian_sigma);
+        
+        //fprintf(stderr, "randomRoad After calls to 'gauss'\n");
+        
         if ( x < 0 ) x = 0;
         else if ( x >= _args.world_x_size ) x = _args.world_x_size - 1;
         if ( y < _args.world_slice_pos ) y = _args.world_slice_pos;
         else if ( y > _args.world_slice_pos+_args.world_slice_size ) y = _args.world_slice_pos + _args.world_slice_size;
         
-        p = std::make_pair(x, y);
+        //fprintf(stderr, "randomRoad first if after initilization\n");
+        
+        eptr2 = std::make_pair(x, y);
 
         if ( !connected[0] && y == _args.world_slice_pos )
         {
@@ -153,38 +187,42 @@ std::pair<int, int> Genetic::randomRoad
         {
             visit_b.insert(x);
         }
-
-        eptr2 = &p;
-        if ( endpoints.find(p) == endpoints.end() )
+        if ( endpoints.find(eptr2) == endpoints.end() )
         {
-            points.push_back(p);
-            endpoints[p] = endpoints[*eptr];
+            points.push_back(eptr2);
+            endpoints[eptr2] = endpoints[eptr];
         }
     }
-    if ( !connected[2] && endpoints[*eptr] != endpoints[*eptr2] )
+    
+    //fprintf(stderr, "randomRoad After first if statement\n");
+    
+    if ( !connected[2] && endpoints[eptr] != endpoints[eptr2] )
     {
-        std::vector<int> comb(cities[endpoints[*eptr]].size()+cities[endpoints[*eptr2]].size());
+        std::vector<int> comb(cities[endpoints[eptr]].size()+cities[endpoints[eptr2]].size());
         std::vector<int>::iterator itr = set_union
         (
-            cities[endpoints[*eptr]].begin(),
-            cities[endpoints[*eptr]].end(),
-            cities[endpoints[*eptr2]].begin(),
-            cities[endpoints[*eptr2]].end(),
+            cities[endpoints[eptr]].begin(),
+            cities[endpoints[eptr]].end(),
+            cities[endpoints[eptr2]].begin(),
+            cities[endpoints[eptr2]].end(),
             comb.begin()
         );
         comb.resize(itr-comb.begin());
         
-        cities[endpoints[*eptr]] = cities[endpoints[*eptr2]] = comb;
+        cities[endpoints[eptr]] = cities[endpoints[eptr2]] = comb;
         
         if ( comb.size() == _cities.size() )
         {
             connected[2] = true;
         }
     }
-    cities[endpoints[*eptr]];
     
-
-    return std::pair<int,int>(_args.GID_from_coord(eptr->first, eptr->second), _args.GID_from_coord(eptr2->first, eptr2->second));
+    //fprintf(stderr, "randomRoad After second if statement\n");
+    
+    cities[endpoints[eptr]];
+    
+    //fprintf( stderr, "randomRoad from GID %d to GID %d\n", _args.GID_from_coord(eptr.first, eptr.second), _args.GID_from_coord(eptr2.first, eptr2.second) );
+    return std::pair<int,int>(_args.GID_from_coord(eptr.first, eptr.second), _args.GID_from_coord(eptr2.first, eptr2.second));
 }
 
 
@@ -283,15 +321,15 @@ void TPool<class T>::run( void (*func) (void *), void *arg )
     {
         tptr->_threadno = i;
         pthread_create( &(tptr->_id), NULL, *(TPool<T>::RunInstanceMethod), tptr );
-        //fprintf(stderr, " Created pthread with id %d.\n", tptr->threadno);
+        //ffprintf(stderr, stderr, " Created pthread with id %d.\n", tptr->threadno);
     }
     
-    //fprintf(stderr, " Running function on self as thread 0\n");
+    //ffprintf(stderr, stderr, " Running function on self as thread 0\n");
     RunInstanceMethod(this);
     // make sure all threads have finished before exiting 
     for ( tptr = targs+1; tptr < targs+num_threads; ++tptr )
     {
-        //fprintf(stderr, " Attempting to join pthread with id %d.\n", tptr->threadno);
+        //ffprintf(stderr, stderr, " Attempting to join pthread with id %d.\n", tptr->threadno);
         pthread_join(tptr->_id, &ret);
     }
 

@@ -30,7 +30,7 @@ public:
     grid();
     ~grid();
     
-    grid(int x, int y);
+    grid(int x, int y , int displace);
 
     void run_Tick();
     void add_city(int x , int y , int pop);

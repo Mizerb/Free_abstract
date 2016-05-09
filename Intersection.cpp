@@ -44,7 +44,15 @@ LinkedNode<Car>* Intersection::getHead()
 }
 
 
-Intersection::Intersection( int x, int y)
+Intersection::Intersection( int x, int y , int GID_)
+{
+    x_ = x;
+    y_ = y;
+    GID = GID_;
+    return;
+}
+
+Intersection::Intersection( int x, int y )
 {
     x_ = x;
     y_ = y;

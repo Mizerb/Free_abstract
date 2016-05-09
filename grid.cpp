@@ -26,12 +26,13 @@ Intersection * grid::find_GID(int GID)
     exit(1);
 }
 
-grid::grid(int x, int y )
+grid::grid(int x, int y , int displace)
 {
     x_size = x;
     y_size = y;
-    
+    int GIDa = displace;
     int x_counter = 0;
+    int y_count = displace/x_size;
     for( int i = 0 ; i < y_size ; i++)
     {
         std::vector<Intersection*> local_ptrs(x_size , NULL);
@@ -39,8 +40,10 @@ grid::grid(int x, int y )
         x_counter = 0;
         for (std::vector<Intersection*>::iterator j = local_ptrs.begin(); j != local_ptrs.end(); ++j, x_counter++)
         {
-            *j = new Intersection(x_counter,i);             
+            *j = new Intersection(x_counter,y_count++ , displace++);
+             //printf("GID: %d:X %d, Y%d\n ", x_counter, i, displace);
         }
+        //printf("GID: %d:X %d, Y%d\n ", x_counter, i, displace)
         Intersections.push_back(local_ptrs);
     }
 
@@ -49,10 +52,11 @@ grid::grid(int x, int y )
 
 void grid::add_city(int x, int y , int pop)
 {
-    int temp = this->Intersections[y/*-1*/][x]->get_GID();
-    delete this->Intersections[y/*-1*/][x];
-    Intersections[y/*-1*/][x] = new City(temp , pop);
-    Cities.push_back((City*)Intersections[y/*-1*/][x]);
+    int temp = this->Intersections[y][x]->get_GID();
+    delete this->Intersections[y][x];
+    Intersections[y][x] = dynamic_cast<Intersection*> (new City(temp , x , y,  pop));
+    Cities.push_back(dynamic_cast<City*>(Intersections[y][x]));
+    //printf("GID: %d, X: %d , Y: %d\n" ,Intersections[y][x]->get_GID(), Intersections[y][x]->x_ , Intersections[y][x]->y_ );
 }
 
 
@@ -60,20 +64,28 @@ void grid::add_Road(int GID_f , int GID_t)
 {
     GID_f -= rank_displace;
     GID_t -= rank_displace;
-
+    printf("crashing\n?");
+    
     int x = GID_f%x_size;
     int y = GID_f/y_size;
-
-    Roads.push_back(Road(GID_f, GID_t));
+    printf("F: %d x:%d y:%d \n", GID_f ,  x , y );
+    Road local(GID_f, GID_t);
+    ("HAHA\n");
+    Roads.push_back(local);
+    printf("make sure\n");
     Roads.back().set_start( x, y );
+    printf("after me\n");
     Intersections[y][x]->add_out_Road(&(Roads.back()));
-
+    printf("here\n");
     x = GID_t%x_size;
     y = GID_t/y_size;
     Roads.back().set_end(x,y);
     Intersections[y][x]->add_in_Road(&(Roads.back()));
-    
+    printf("Where do I crash?\n");
     Roads.back().set_connection( find_GID(GID_t + rank_displace));
+    
+    
+    printf("finally\n");
 }
 
 Bridge_Intersection* grid::border_Road(int GID_f, int GID_t, int other_rank)

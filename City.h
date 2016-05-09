@@ -41,7 +41,7 @@ public:
     
     City();
     City(int GID_, int pop): Intersection(GID_) {}
-    City(int x_, int y_, int pop): Intersection(x_,y_), population(pop) {received=0;}
+    City(int GID_ , int x_, int y_, int pop): Intersection(x_,y_, GID_), population(pop) {received=0;}
     ~City();
     int getPop(){return population;}
     

@@ -1,40 +1,31 @@
+#include "LinkedNode.h"
+
 /*
-
-template<class T>
-class LinkedNode
+template<class T> LinkedNode<T>::LinkedNode()
 {
-    public:
-        T data;
-        LinkedNode()
-        {
-            //default contructor
-        }
-        
-        
-        LinkedNode(T indata)
-        {
-            data = indata;
-            next = NULL;
-            
-        }
-        
-        LinkedNode<T>* LinkedNode<T>::DeleteAfter()
-        {
-              // store the next Node in a temporary Node
-            LinkedNode<T>* tempNode = next;
-            // check if there is a next node
-            if(next != NULL)
-                next = next->next;
+    //default contructor
+    next = NULL;
+    prev = NULL;
+}
+    
+    
+template<class T> LinkedNode<T>::LinkedNode(T indata)
+{
+    data = indata;
+    next = NULL;
+    prev = NULL;
+}
+    
+    
+template<class T> LinkedNode<T>* LinkedNode<T>::DeleteAfter()
+{
+      // store the next Node in a temporary Node
+    LinkedNode<T>* tempNode = next;
+    // check if there is a next node
+    if(next != NULL)
+        next = next->next;
 
-            return tempNode;
-        }
-        
-        
-    private:
-        LinkedNode<T> * next;
-        
-    
-    
-    
+    return tempNode;
 }
 */
+        

@@ -57,8 +57,7 @@ Road::~Road()
         delete temp;
     }
 }
-
-Road::LinkedNode<Car>* getHead()
+LinkedNode<Car>* Road::getHead()
 {
     LinkedNode<Car> *head_ = this->head;
     this->head = head_->next;

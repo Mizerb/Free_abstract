@@ -6,13 +6,17 @@
 
 #include "LinkedNode.h"
 #include "Road.h"
+#include "Car.h"
 #include <stdlib.h>
 #include <map>
 #include <vector>
+#include "GridObject.h"
 
 class Road;
+template <class T>
+class LinkedNode;
 
-class Intersection
+class Intersection : public GridObject
 {
     
 public:
@@ -32,7 +36,8 @@ public:
 
 
     int GID; //Grid ID
-    Intersection(int x, int y);
+    Intersection(int x, int y, int GID_);
+     Intersection(int x, int y);
     Intersection(int GID_) : GID(GID_){}
     ~Intersection();
     
