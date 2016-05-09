@@ -48,6 +48,7 @@ std::vector<int> Genetic::getGraph (int ind) {
         fprintf(stderr, "GetGraph while loop\n");
         
         _roads.push_back(generateRoads());
+        ++_comm_tag;
     }
 
     return _roads[ind];
@@ -58,17 +59,17 @@ std::vector<int> Genetic::generateRoads()
     std::vector<int> graph;
     std::pair<int,int> next_road;
     MPI_Request connection[2];
-    int x_border, count;
-    int success[3] = {false};
+    int border_road[2][4], count, borderc[2] = {-1,-1};
+    int success = false;
     std::vector< std::pair<int,int> > points;
     std::map< std::pair<int,int>, int > endpoints;
     std::vector< std::vector<int> > connect(_cities.size());
-    std::set<int> visit_b;
     int i;
     std::vector<City*>::iterator it;
     
     //fprintf(stderr, "GenerateRoads init\n");
     
+
     for ( it = _cities.begin(), i = 0; it != _cities.end(); ++it, ++i )
     {
         std::vector<int> next_city;
@@ -80,55 +81,98 @@ std::vector<int> Genetic::generateRoads()
         points.push_back(loc);
     }
     
-    //fprintf(stderr, "GenerateRoads after first for loop\n");
-    
-    if ( _args.neighbors[0] < 0 )
+    if ( _args.neighbors[0] >= 0 )
     {
-        success[0] = 1;
+        std::vector<int> border_city;
+        borderc[0] = connect.size();
+        border_city.push_back(borderc[0]);
+        connect.push_back(border_city);
+        
+        MPI_Irecv( border_road[0], 4, MPI_INT, _args.neighbors[0], _comm_tag, MPI_COMM_WORLD, &(connection[0]) );
     }
-    if ( _args.neighbors[1] < 0 )
+    if ( _args.neighbors[1] >= 0 )
     {
-        success[1] = 1;
+        std::vector<int> border_city;
+        borderc[1] = connect.size();
+        border_city.push_back(borderc[1]);
+        connect.push_back(border_city);
+
+        MPI_Irecv( border_road[1], 4, MPI_INT, _args.neighbors[1], _comm_tag, MPI_COMM_WORLD, &(connection[1]) );
     }
 
-    if ( !success[0] )
-    {
-        MPI_Irecv( &(success[0]), 1, MPI_INT, _args.neighbors[0], _comm_tag, MPI_COMM_WORLD, &(connection[0]) );
-    }
-    if ( !success[1] )
-    {
-        MPI_Irecv( &x_border, 1, MPI_INT, _args.neighbors[1], _comm_tag, MPI_COMM_WORLD, &(connection[1]) );
-    }
+    //fprintf(stderr, "GenerateRoads after first for loop\n");
     
+
     //fprintf(stderr, "GenerateRoads after if statements\n");
     
-    while ( !(success[0] && success[1] && success[2]) )
+    while ( !success )
     {
-        if ( !success[1] )
-        {
-            MPI_Request_get_status(connection[1], &count, MPI_STATUS_IGNORE);
-            if ( count )
-            {
-                // check to see if contained
-                if ( visit_b.find( x_border ) != visit_b.end() )
-                {
-                    success[1] = 1;
-                    MPI_Isend( &(success[1]), 1, MPI_INT, _args.neighbors[1], _comm_tag, MPI_COMM_WORLD, &(connection[1]) );
-                }
-                else
-                {
-                    MPI_Irecv( &x_border, 1, MPI_INT, _args.neighbors[1], _comm_tag, MPI_COMM_WORLD, &(connection[1]) );
-                }
-            }
-        }
-        //fprintf(stderr, "GenerateRoads primary while loop after if statements\n");
-        
-        next_road = randomRoad(points, endpoints, connect, visit_b, success);
+        next_road = randomRoad(points, endpoints, connect, success);
         
         //fprintf(stderr, "GenerateRoads primary while loop After 'randomRoad'\n");
         
         graph.push_back(next_road.first);
         graph.push_back(next_road.second);
+        
+        if ( borderc[0] >= 0 )
+        {
+            MPI_Request_get_status(connection[0], &count, MPI_STATUS_IGNORE);
+            if ( count )
+            {
+                std::pair<int,int> entry(border_road[0][2], border_road[0][3]);
+                graph.push_back(_args.GID_from_coord(border_road[0][0], border_road[0][1]));
+                graph.push_back(_args.GID_from_coord(border_road[0][2], border_road[0][3]));
+                // check to see if contained
+                if ( endpoints.find( entry ) != endpoints.end() )
+                {
+                    int size = connect[endpoints[entry]].size();
+                    if ( size > 1 &&
+                         connect[endpoints[entry]].back() == borderc[1] &&
+                         connect[endpoints[entry]][size-2] != borderc[0] )
+                    {
+                        connect[endpoints[entry]].insert(--(connect[endpoints[entry]].end()), borderc[0]); 
+                    }
+                    else if ( connect[endpoints[entry]].back() != borderc[0] )
+                    {
+                        connect[endpoints[entry]].push_back(borderc[0]);
+                    }
+                    
+                    if ( connect[endpoints[entry]].size() == connect.size() ) 
+                    {  
+                        success = true;
+                    }
+                }
+                else
+                {
+                    endpoints[entry] = borderc[0];
+                }
+                MPI_Irecv( border_road[0], 4, MPI_INT, _args.neighbors[1], _comm_tag, MPI_COMM_WORLD, &(connection[1]) );
+            }
+        }
+
+        if ( borderc[1] >= 0 )
+        {
+            MPI_Request_get_status(connection[1], &count, MPI_STATUS_IGNORE);
+            if ( count )
+            {
+                std::pair<int,int> entry(border_road[1][2], border_road[1][3]);
+                graph.push_back(_args.GID_from_coord(border_road[1][0], border_road[1][1]));
+                graph.push_back(_args.GID_from_coord(border_road[1][2], border_road[1][3]));
+                // check to see if contained
+                if ( endpoints.find(entry) != endpoints.end() && connect[endpoints[entry]].back() != borderc[1] )
+                {
+                    connect[endpoints[entry]].push_back(borderc[1]);
+                    if ( connect[endpoints[entry]].size() == connect.size() ) success = true;
+                }
+                else
+                {
+                    endpoints[entry] = borderc[1];
+                }
+                MPI_Irecv( border_road[1], 4, MPI_INT, _args.neighbors[1], _comm_tag, MPI_COMM_WORLD, &(connection[1]) );
+            }
+        }
+        //fprintf(stderr, "GenerateRoads primary while loop after if statements\n");
+        
         
     }
     fprintf(stderr, "GenerateRoads finished\n");
@@ -142,11 +186,11 @@ std::pair<int, int> Genetic::randomRoad
     std::vector< std::pair<int,int> > &points, 
     std::map< std::pair<int,int>, int> &endpoints, 
     std::vector< std::vector<int> > &cities, 
-    std::set<int> &visit_b, 
-    int (&connected)[3]
+    int &connected
 )
 {
     std::pair<int,int> eptr, eptr2;
+    int rd[4];
     // first try to connect two random endpoints
     if ( points.size() > 0 )
     {
@@ -169,26 +213,35 @@ std::pair<int, int> Genetic::randomRoad
         int y = (int) gauss(eptr.second + 0.5, _gaussian_sigma);
         
         //fprintf(stderr, "randomRoad After calls to 'gauss'\n");
-        
+
         if ( x < 0 ) x = 0;
         else if ( x >= _args.world_x_size ) x = _args.world_x_size - 1;
-        if ( y < _args.world_slice_pos ) y = _args.world_slice_pos;
-        else if ( y > _args.world_slice_pos+_args.world_slice_size -1 ) y = _args.world_slice_pos + _args.world_slice_size - 2;
+        if ( y < 0 ) y = 0;
+        else if ( y >= _args.world_y_size ) y = _args.world_y_size - 1;
         
         //fprintf(stderr, "randomRoad first if after initilization\n");
         
         eptr2 = std::make_pair(x, y);
 
-        if ( !connected[0] && y == _args.world_slice_pos )
+        if ( y < _args.world_slice_pos )
         {
              MPI_Request req;
-             MPI_Isend( &x, 1, MPI_INT, _args.neighbors[0], _comm_tag, MPI_COMM_WORLD, &req );
+             rd[0] = eptr.first;
+             rd[1] = eptr.second;
+             rd[2] = eptr2.first;
+             rd[3] = eptr2.second;
+             MPI_Isend( rd, 4, MPI_INT, _args.neighbors[0], _comm_tag, MPI_COMM_WORLD, &req );
         }
-        else if ( !connected[1] && y == _args.world_slice_pos+_args.world_slice_size )
+        else if ( y >= _args.world_slice_pos+_args.world_slice_size)
         {
-            visit_b.insert(x);
+             MPI_Request req;
+             rd[0] = eptr.first;
+             rd[1] = eptr.second;
+             rd[2] = eptr2.first;
+             rd[3] = eptr2.second;
+             MPI_Isend( rd, 4, MPI_INT, _args.neighbors[1], _comm_tag, MPI_COMM_WORLD, &req );
         }
-        if ( endpoints.find(eptr2) == endpoints.end() )
+        else if ( endpoints.find(eptr2) == endpoints.end() )
         {
             points.push_back(eptr2);
             endpoints[eptr2] = endpoints[eptr];
@@ -197,7 +250,7 @@ std::pair<int, int> Genetic::randomRoad
     
     //fprintf(stderr, "randomRoad After first if statement\n");
     
-    if ( !connected[2] && endpoints[eptr] != endpoints[eptr2] )
+    if ( endpoints[eptr] != endpoints[eptr2] )
     {
         std::vector<int> comb(cities[endpoints[eptr]].size()+cities[endpoints[eptr2]].size());
         std::vector<int>::iterator itr = set_union
@@ -212,15 +265,13 @@ std::pair<int, int> Genetic::randomRoad
         
         cities[endpoints[eptr]] = cities[endpoints[eptr2]] = comb;
         
-        if ( comb.size() == _cities.size() )
+        if ( comb.size() == cities.size() )
         {
-            connected[2] = true;
+            connected = true;
         }
     }
     
     //fprintf(stderr, "randomRoad After second if statement\n");
-    
-    cities[endpoints[eptr]];
     
     //fprintf( stderr, "randomRoad from GID %d to GID %d\n", _args.GID_from_coord(eptr.first, eptr.second), _args.GID_from_coord(eptr2.first, eptr2.second) );
     return std::pair<int,int>(_args.GID_from_coord(eptr.first, eptr.second), _args.GID_from_coord(eptr2.first, eptr2.second));

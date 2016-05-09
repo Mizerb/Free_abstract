@@ -75,8 +75,7 @@ private:
         std::vector< std::pair<int,int> > &points, 
         std::map< std::pair<int,int>, int> &endpoints, 
         std::vector< std::vector<int> > &cities, 
-        std::set<int> &visit_b, 
-        int (&connected)[3]
+        int &connected
     );
     void selectData();
     void crossover(std::vector<int> &ind1, std::vector<int> &ind2);
