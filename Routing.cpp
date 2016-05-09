@@ -20,7 +20,7 @@ void grid::BFS(Intersection* root)
     std::set<Intersection*, BFS_compare>::iterator it;
 
 
-    printf("Setting everything to zero\n");
+    //printf("Setting everything to zero\n");
     for(int i = 0 ; i < Intersections.size(); i++)
       for(int j =0 ; j< Intersections[i].size(); j++)
     {
@@ -47,7 +47,7 @@ void grid::BFS(Intersection* root)
 
     root->dist = 0;
     Q.erase(it); Q.insert(root);
-    printf("into the BFS\n");
+    //printf("into the BFS\n");
     while( not Q.empty() )
     {
         Intersection* local = *(Q.begin()); Q.erase(local);
@@ -238,22 +238,22 @@ void grid::find_routing() //yes?
     
     //for( int i = 0 ; i< Roads.size() ; i++) printf("ROADING %d\n", Roads[i].out->GID);
     
-    safty_dance();
+    //safty_dance();
 
 
 
     printf("BFS time\n");
     for(int i = 0 ; i <Cities.size(); i++ )
     {
-        printf("Running BFS\n");
+        //printf("Running BFS\n");
         BFS(dynamic_cast<Intersection*> (Cities[i]));
-        printf("completed BFS\n");
+        //printf("completed BFS\n");
         for(int j = 0 ; j < Cities.size(); j++)
         {
             if(j==i) continue;
-            printf("Performing back trace\n");
+            //printf("Performing back trace\n");
             trace_back( Cities[j] );
-            printf("Back Trace worked\n");
+            //printf("Back Trace worked\n");
         }
         for(int j=0 ; j < Bridges.size(); j++)
         {
@@ -277,6 +277,7 @@ void grid::find_routing() //yes?
             trace_back( &Bridges[j] , &Bridges[i] );
         }
     }
+    //exit(1);
     printf("end of BFS time\n");
     //Now that we know all the interior routes in each node,
     //  we tell other ranks how what the routes are. 
@@ -290,10 +291,10 @@ void grid::find_routing() //yes?
             {
                
                 Bridges[j].swap_links();
-                printf("sent out the links\n");
+                //printf("sent out the links\n");
             }
         }
-        printf("send all links\n");
+        //printf("send all links\n");
         for( int j = 0 ; j < Bridges.size(); j++)
         {
             if( Bridges[j].is_outgoing() )
@@ -339,3 +340,7 @@ void grid::find_routing() //yes?
     printf("routed successfully\n");
 }
 
+void grid::path_testing( Intersection* start , int target_GID)
+{
+
+}
