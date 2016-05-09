@@ -53,13 +53,20 @@ void grid::BFS(Intersection* root)
         {
             Intersection* out = local->outConnections[i]->out;
             if( out == NULL) printf("shit\n");
-            printf("out test %d\n" ,local->outConnections[i]->start);
+            //printf("out test %d\n" ,local->outConnections[i]->start);
             int alt = local->outConnections[i]->get_weight() + local->dist;
             if( alt < out->dist )
             {
                 out -> dist = alt;
                 out -> prev = local;
-                Q.erase(out);Q.insert(out);
+                it = Q.find( out);
+                if( it == Q.end() )
+                {
+                  printf( "LInked to intersec not in Q...\n");
+                  Q.insert(out);  
+                } 
+                else Q.erase(out);Q.insert(out);
+            
             }
         }
     }

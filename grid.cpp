@@ -70,27 +70,25 @@ void grid::add_Road(int GID_f , int GID_t)
     int x = GID_f%x_size;
     int y = GID_f/y_size;
     //printf("F: %d x:%d y:%d \n", GID_f ,  x , y );
-    Road local(GID_f, GID_t);
+    Road * local = new Road(GID_f, GID_t);
     //("HAHA\n");
     Roads.push_back(local);
     //printf("make sure\n");
-    Roads.back().set_start( x, y );
+    local->set_start( x, y );
     //printf("after me\n");
 
-    
-    Road * new_road = &(Roads[Roads.size()-1]);
 
-    Intersections[y][x]->add_out_Road(new_road);
+    Intersections[y][x]->add_out_Road(local);
     //printf("here\n");
     x = GID_t%x_size;
     y = GID_t/y_size;
-    new_road->set_end(x,y);
-    Intersections[y][x]->add_in_Road(new_road);
+    local->set_end(x,y);
+    Intersections[y][x]->add_in_Road(local);
     Intersection* a = Intersections[y][x];
     //printf("%d\n", a->GID);
     //printf("F: %d x:%d y:%d \n", GID_t ,  x , y );
     //printf("Where do I crash?\n");
-    new_road->set_connection(Intersections[y][x]);
+    local->set_connection(Intersections[y][x]);
     
     x = GID_f%x_size;
     y = GID_f/y_size;
@@ -140,39 +138,39 @@ Bridge_Intersection* grid::border_Road(int GID_f, int GID_t, int other_rank)
 
 void grid::add_Road(Bridge_Intersection* from_, int GID_t, int GID_f)
 {
-    Road local(from_->get_GID(),GID_t );
-    local.set_start(-1,-1);
+    Road * local = new Road(from_->get_GID(),GID_t );
+    local->set_start(-1,-1);
     
     Roads.push_back(local);
     
-    from_->add_out_Road(&(Roads.back()));
+    from_->add_out_Road(local);
 
     if( GID_t == 32767 || from_->GID == 32767) printf("steaming shit\n");
 
     int x = GID_t%x_size;
     int y = GID_t/y_size;
-    Roads.back().set_end(x,y);
-    Intersections[y][x]->add_in_Road(&(Roads.back()));
-    
-    Roads.back().set_connection(Intersections[y][x] );
+    local->set_end(x,y);
+    Intersections[y][x]->add_in_Road(local);
+    Intersection * a = Intersections[y][x];
+    local->set_connection(Intersections[y][x] );
     
     x = (GID_t%x_size) - (GID_f%x_size);
     y = (GID_t/x_size) - (GID_f/x_size);
     
-    Roads.back().set_weight( sqrt( (x*x)+(y*y))/2 );
+    local->set_weight( sqrt( (x*x)+(y*y))/2 );
 
 
-    if( Intersections[y][x]->outConnections.back()->out != a ) //Somehow this isn't being met.
+    if( from_->outConnections.back()->out != a ) //Somehow this isn't being met.
     {
         printf("Steaming dogshit\n");
         exit(1);
     }
-    if( Intersections[y][x]->outConnections.back()->end != GID_t+rank_displace)
+    if( from_->outConnections.back()->end != GID_t+rank_displace)
     {
         printf("test failed GRID roading\n");
         exit(1);
     }
-    if( Intersections[y][x]->outConnections.back()->start != GID_f+rank_displace)
+    if( from_->outConnections.back()->start != from_->GID)
     {
         printf("FUCK, road start is not equal to intersection\n");
         exit(1);
@@ -183,27 +181,28 @@ void grid::add_Road(Bridge_Intersection* from_, int GID_t, int GID_f)
 
 void grid::add_Road(int GID_f, Bridge_Intersection* to, int GID_t)
 {
-    Road local(GID_f, to->get_GID());
+    Road * local = new Road(GID_f, to->get_GID());
     Roads.push_back(local);
 
-    Roads.back().set_end(-1,-1); // CAN BE CHANGED
-    to->add_in_Road(&(Roads.back()));
+    local->set_end(-1,-1); // CAN BE CHANGED
+    to->add_in_Road(local);
 
 
     int x = GID_f%x_size;
     int y = GID_f/y_size;
-    Roads.back().set_start(x,y);
-    Intersections[y][x]->add_out_Road(&(Roads.back()));
+    local->set_start(x,y);
+    Intersections[y][x]->add_out_Road(local);
     
-    Roads.back().set_connection( /*dynamic_cast<Intersection*>*/(to) );
+    local->set_connection( /*dynamic_cast<Intersection*>*/(to) );
 
     if( GID_f == 32767 || to->GID == 32767) printf("steaming shit\n");
 
     x = (GID_t%x_size) - (GID_f%x_size);
     y = (GID_t/x_size) - (GID_f/x_size);
     
-    Roads.back().set_weight( sqrt( (x*x)+(y*y))/2 );
+    local->set_weight( sqrt( (x*x)+(y*y))/2 );
 
+/*
     if( Intersections[y][x]->outConnections.back()->out != to ) //Somehow this isn't being met.
     {
         printf("Steaming dogshit\n");
@@ -219,7 +218,7 @@ void grid::add_Road(int GID_f, Bridge_Intersection* to, int GID_t)
         printf("FUCK, road start is not equal to intersection\n");
         exit(1);
     }
-
+*/
 
     return;
 }
@@ -244,7 +243,7 @@ void grid::run_Tick()
 {
     for(int i = 0;i<Roads.size();i++)
     {
-        Roads[i].process_cars();
+        Roads[i]->process_cars();
     }
     for(int i = 0;i<Bridges.size();i++)
     {

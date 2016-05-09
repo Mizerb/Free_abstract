@@ -25,7 +25,7 @@ private:
 
     std::vector<Bridge_Intersection> Bridges;
 
-    std::vector<Road> Roads;
+    std::vector<Road*> Roads;
 public:
     grid();
     ~grid();
