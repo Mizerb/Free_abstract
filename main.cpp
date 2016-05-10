@@ -38,8 +38,8 @@ int main(int argc, char** argv){
     MPI_Init( &argc, &argv);
     Info *worldInfo = new Info(argc, argv);
     int numCities = 0;
-    
-   
+    //fprintf(stderr, "Created Info object\n");
+
     MPI_Barrier(MPI_COMM_WORLD);
     
     FILE* fptr = fopen(argv[5], "r");
@@ -120,8 +120,8 @@ To the corrosponding ranks
 */
 Genetic* readAndSend(int numCities, Rank* rankMe, FILE* fptr, Info* worldInfo){
     
-    int *buffer = (int*) calloc(3, 4);
-    int *temp = (int*) calloc(3, 4);
+    int *buffer = (int*) calloc(3, sizeof(int));
+    int *temp = (int*) calloc(3, sizeof(int));
     int *myBuf;
     int mySize = 0;
     
@@ -140,11 +140,12 @@ Genetic* readAndSend(int numCities, Rank* rankMe, FILE* fptr, Info* worldInfo){
     
     */
     
-    fscanf(fptr, "%d,%d,%d\n", buffer + current, buffer + current + 1, buffer + current + 2);
-    rankMe->cities_GID[0] = worldInfo->GID_from_coord(buffer[0],buffer[1]);
-    //printf("Outside: %d %d %d %d\n", i, buffer[current], buffer[current +1], buffer[current+2]);
-    i++;
+    //fscanf(fptr, "%d,%d,%d\n", buffer + current, buffer + current + 1, buffer + current + 2);
+    //fprintf(stderr, "reading in city info\n");
     rankMe->cities_GID = (int*)calloc(sizeof(int),numCities);
+    rankMe->cities_GID[0] = worldInfo->GID_from_coord(buffer[0],buffer[1]);
+    //fprintf(stderr, "Outside: %d %d %d %d\n", i, buffer[current], buffer[current +1], buffer[current+2]);
+    i++;
     //int runs = 0;
     while (i < numCities /*&& runs++ < 10*/){
         //printf("Inside: %d %d %d %d\n", i, buffer[current], buffer[current + 1], buffer[current + 2]);
