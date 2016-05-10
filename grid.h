@@ -81,6 +81,7 @@ public:
     int total_ranks;
 
     int get_bridge_size() const{ return Bridges.size();}
+    int get_road_count() const { return Roads.size();}
 };
 
 #endif

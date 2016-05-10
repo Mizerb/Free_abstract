@@ -52,7 +52,7 @@ void Rank::Add_Roads(int * GIDs, int leng)
             ////printf("start\n");
             if( GIDs[i] == GIDs[i+1])
             {
-                printf("Intersections can't lead to themselves\n");
+                //printf("Intersections can't lead to themselves\n");
                 continue;
             }
             local_grid->add_Road( GIDs[i], GIDs[i+1]);
@@ -80,7 +80,9 @@ void Rank::Add_Roads(int * GIDs, int leng)
         }
     }
 
-    printf( "BRIDGE NODE COUNT %d\n", local_grid->get_bridge_size());
+    printf( "RANK %d:BRIDGE NODE COUNT %d\n",my_rank, local_grid->get_bridge_size());
+    printf( "RANK %d:ROAD COUNTING %d\n",my_rank, local_grid->get_road_count());
+    //exit(1);
 
     //local_grid->safty_dance();
 }
