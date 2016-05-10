@@ -20,7 +20,10 @@ class Rank
     int GID_to_y(int GID);
 
 public:
-    
+
+
+    int tot_num_Cities;
+    int * cities_GID;
     int y_size;
     int my_rank;
     int mpi_comm_size;

@@ -83,8 +83,10 @@ int main(int argc, char** argv){
         {
             fprintf(stderr, "Main in the for loops\n");
             //Generate roads
+            //return 0; //No freeze if this is here
             std::vector<int> Road_data = myGene->getGraph(member);
             fprintf(stderr, "Main Got roads from genetic\n");
+            return 0; //Will freeze if only this return is present
             rankMe->Add_Roads(Road_data.data(), Road_data.size());
             fprintf(stderr, "Main Added roads to grid\n");
         
@@ -139,9 +141,10 @@ Genetic* readAndSend(int numCities, Rank* rankMe, FILE* fptr, Info* worldInfo){
     */
     
     fscanf(fptr, "%d,%d,%d\n", buffer + current, buffer + current + 1, buffer + current + 2);
+    rankMe->cities_GID[0] = worldInfo->GID_from_coord(buffer[0],buffer[1]);
     //printf("Outside: %d %d %d %d\n", i, buffer[current], buffer[current +1], buffer[current+2]);
     i++;
-    
+    rankMe->cities_GID = (int*)calloc(sizeof(int),numCities);
     //int runs = 0;
     while (i < numCities /*&& runs++ < 10*/){
         //printf("Inside: %d %d %d %d\n", i, buffer[current], buffer[current + 1], buffer[current + 2]);
@@ -182,6 +185,7 @@ Genetic* readAndSend(int numCities, Rank* rankMe, FILE* fptr, Info* worldInfo){
             
             current += 3;
             fscanf(fptr, "%d,%d,%d\n", buffer + current, buffer + current + 1, buffer + current + 2);
+            rankMe->cities_GID[i] = worldInfo->GID_from_coord(buffer[current + 0],buffer[current + 1]);
             i++;
         }
     }
@@ -194,22 +198,25 @@ Genetic* readAndSend(int numCities, Rank* rankMe, FILE* fptr, Info* worldInfo){
         mySize = current;
         
     } else
-    {
-        
+    {   
         MPI_Isend(&current, 1, MPI_INT, curRank, 0, MPI_COMM_WORLD, &res1);
         MPI_Isend(buffer, current, MPI_INT, curRank, 1, MPI_COMM_WORLD, &res2);
     }
     
-    
     printf("Size of rank 0 array: %d\n", mySize);
-    /*for(int j = 0; j < mySize; j+=3){
+    for(int j = 0; j < mySize; j+=3){
         printf("Rank 0: %d %d %d\n", myBuf[j], myBuf[j+1], myBuf[j+2]);
-    }*/
+        fprintf(stderr, "----------%d\n",rankMe->cities_GID[j]);
+    }
+    
+    fprintf(stderr, "----------%d\n",rankMe->cities_GID[3]);
     
     rankMe->City_Start(myBuf, mySize);
-    rankMe->printCities();
+    //rankMe->printCities();
     
     Genetic *myGene = new Genetic(42, *worldInfo, rankMe->getCities());
+    
+    
     
     free(buffer);
     free(temp);
@@ -243,12 +250,12 @@ Genetic* getCities(Rank* rankMe, Info* worldInfo)
     
     MPI_Recv(buffer, size, MPI_INT, 0, 1, MPI_COMM_WORLD, &stat2);
     
-    /*for(int j = 0; j < size; j+=3){
+    for(int j = 0; j < size; j+=3){
         printf("Rank %d: %d %d %d\n", rankMe->my_rank, buffer[j], buffer[j+1], buffer[j+2]);
-    }*/
+    }
     
     rankMe->City_Start(buffer, size);
-    rankMe->printCities();
+    //rankMe->printCities();
     
     Genetic *myGene = new Genetic(42, *worldInfo, rankMe->getCities());
     
