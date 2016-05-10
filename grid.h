@@ -23,7 +23,7 @@ private:
     std::vector<std::vector<Intersection*> > Intersections;
     std::vector<City*> Cities;
 
-    std::vector<Bridge_Intersection> Bridges;
+    std::vector<Bridge_Intersection*> Bridges;
 
     std::vector<Road*> Roads;
 public:
@@ -79,6 +79,8 @@ public:
     void safty_dance();
 
     int total_ranks;
+
+    int get_bridge_size() const{ return Bridges.size();}
 };
 
 #endif
