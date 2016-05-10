@@ -75,6 +75,7 @@ private:
         std::vector< std::pair<int,int> > &points, 
         std::map< std::pair<int,int>, int> &endpoints, 
         std::vector< std::vector<int> > &cities, 
+        int (&curr_send)[2],
         int &connected
     );
     void selectData();
