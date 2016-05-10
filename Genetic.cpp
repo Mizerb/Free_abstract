@@ -219,7 +219,7 @@ std::pair<int, int> Genetic::randomRoad
 )
 {
     std::pair<int,int> eptr, eptr2;
-    int rd[4];
+    int rd[4], e1, e2;
     // first try to connect two random endpoints
     if ( points.size() > 0 )
     {
@@ -278,21 +278,22 @@ std::pair<int, int> Genetic::randomRoad
     }
     
     //fprintf(stderr, "randomRoad After first if statement\n");
-    
-    if ( endpoints[eptr] != endpoints[eptr2] )
+    e1 = cities[endpoints[eptr]][0], e2 = cities[endpoints[eptr2]][0];
+        
+    if ( e1 != e2 )
     {
-        std::vector<int> comb(cities[endpoints[eptr]].size()+cities[endpoints[eptr2]].size());
+        std::vector<int> comb(cities[e1].size()+cities[e2].size());
         std::vector<int>::iterator itr = set_union
         (
-            cities[endpoints[eptr]].begin(),
-            cities[endpoints[eptr]].end(),
-            cities[endpoints[eptr2]].begin(),
-            cities[endpoints[eptr2]].end(),
+            cities[e1].begin(),
+            cities[e1].end(),
+            cities[e2].begin(),
+            cities[e2].end(),
             comb.begin()
         );
         comb.resize(itr-comb.begin());
         
-        cities[endpoints[eptr]] = cities[endpoints[eptr2]] = comb;
+        cities[e1 < e2? e1 : e2] = comb;
         
         if ( comb.size() == cities.size() )
         {
