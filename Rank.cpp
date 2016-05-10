@@ -33,7 +33,8 @@ void Rank::City_Start(int * cities_, int leng)
         pop = cities_[i+2];
         if( y/y_size == my_rank )
         {
-            //printf("City %d: %d %d %d\n", i/3,cities_[i], cities_[i+1], cities_[i+2]);
+            
+            printf("[%d]City %d: %d %d\n", my_rank , i/3,cities_[i], cities_[i+1]);
             local_grid->add_city(x, y%y_size , pop);
         }
     }

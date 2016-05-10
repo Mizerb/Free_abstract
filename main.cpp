@@ -104,7 +104,7 @@ int main(int argc, char** argv){
         }
     }
     
-    
+    MPI_Barrier(MPI_COMM_WORLD);
     MPI_Finalize();
     
     return EXIT_SUCCESS;
@@ -221,6 +221,7 @@ Genetic* readAndSend(int numCities, Rank* rankMe, FILE* fptr, Info* worldInfo){
     free(buffer);
     free(temp);
     free(myBuf);
+    
     
     return myGene;
 }
