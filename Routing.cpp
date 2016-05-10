@@ -277,12 +277,12 @@ void grid::find_routing() //yes?
             trace_back( Bridges[j] , Bridges[i] );
         }
     }
-    exit(1);
+    //exit(1);
     printf("end of BFS time\n");
     //Now that we know all the interior routes in each node,
     //  we tell other ranks how what the routes are. 
 
-    exit(1);
+    //exit(1);
      printf("swapping links\n");
     for(int i=0 ; i < Bridges.size() ; i++) Bridges[i]->work_prep();
     for( int i = 0; i< total_ranks ; i++ )
