@@ -137,7 +137,7 @@ std::vector<int> Genetic::generateRoads()
                         connect[endpoints[entry]].push_back(borderc[0]);
                     }
                     
-                    if ( connect[endpoints[entry]].size() == connect.size() ) 
+                    if ( connect[endpoints[entry]].size() == connect.size() )
                     {  
                         success = true;
                     }
@@ -146,7 +146,7 @@ std::vector<int> Genetic::generateRoads()
                 {
                     endpoints[entry] = borderc[0];
                 }
-                MPI_Irecv( border_road[0], 4, MPI_INT, _args.neighbors[1], _comm_tag, MPI_COMM_WORLD, &(connection[1]) );
+                MPI_Irecv( border_road[0], 4, MPI_INT, _args.neighbors[0], _comm_tag, MPI_COMM_WORLD, &(connection[0]) );
             }
         }
 
