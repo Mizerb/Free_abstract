@@ -77,6 +77,7 @@ public:
     void trace_back(City * path_end , Bridge_Intersection * from);
 
     void safty_dance();
+    void run_test();
 
     int total_ranks;
 

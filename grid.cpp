@@ -90,8 +90,11 @@ void grid::add_Road(int GID_f , int GID_t)
     //printf("Where do I crash?\n");
     local->set_connection(Intersections[y][x]);
     
+
+/*
     x = GID_f%x_size;
     y = GID_f/x_size;
+
     if( Intersections[y][x]->outConnections.back()->out != a ) //Somehow this isn't being met.
     {
         printf("Steaming dogshit\n");
@@ -125,12 +128,16 @@ void grid::add_Road(int GID_f , int GID_t)
         }
         //else //printf("safe X :%d  Y: %d  end:%p \n", j,i ,Intersections[i][j]->outConnections[0]->out );
     }
+*/ 
 }
+#include <climits>
 
 Bridge_Intersection* grid::border_Road(int GID_f, int GID_t, int other_rank)
 {
-    int x = (int) (-.5)*(((GID_f+GID_t)*(GID_f+GID_t+1))+GID_t);
-
+    int x = (((.5)*(((GID_f+GID_t)*(GID_f+GID_t+1))+GID_t)));
+    x = (x % INT_MAX) ;
+    x = x *-1;
+    //printf("GIDt: %d  GIDf: %d  x: %d  other_rank %d\n",GID_f, GID_t, x, other_rank );
     Bridge_Intersection * local = new Bridge_Intersection(x, other_rank);
 
     Bridges.push_back(local);
