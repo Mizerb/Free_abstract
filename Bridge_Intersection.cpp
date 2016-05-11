@@ -3,7 +3,7 @@
 
 void Bridge_Intersection::GID_testing(FILE * outfile)
 {
-    fprintf(outfile , "GID%d Target%d\n", GID, share_rank);
+    fprintf(outfile , "GID:%d , Target:%d , INC roads %d , OUT road %d\n", GID, share_rank, (int)inConnections.size() , (int)outConnections.size());
 }
 
 void Bridge_Intersection::Connection_testing_S()

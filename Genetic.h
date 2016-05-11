@@ -54,7 +54,7 @@ public:
     Genetic ( int tag, const Info &pargs, std::vector<City*> regionals ):
             _cities(regionals), _args(pargs), _comm_tag(tag), _first_gen(true), _roads() 
     {
-        _gaussian_sigma = (int) sqrt(1.0*_args.world_x_size*_args.world_y_size/_cities.size())/2;
+        _gaussian_sigma = (int) sqrt(.25*_args.world_x_size*_args.world_slice_size/_cities.size());
     }
     ~Genetic (){}
     /* takes the index of the requested individual and returns a vector of Roads

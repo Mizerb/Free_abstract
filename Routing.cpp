@@ -259,10 +259,11 @@ void grid::run_test()
 void grid::find_routing() //yes?
 {
     /* why test here */
+    printf("runnings tests\n");
     run_test();
-    
+    printf("RANK %d done with tests\n", (rank_displace)/y_size/x_size);
     /* Why not */
-
+MPI_Barrier(MPI_COMM_WORLD);
     // Find paths to important points in the interior
     // Set the paths in place in all local Intersections
     printf("basic prep\n");
@@ -334,12 +335,11 @@ void grid::find_routing() //yes?
         }
         //printf("send all links\n");
         for( int j = 0 ; j < Bridges.size(); j++)
-        {
+        { 
             if( Bridges[j]->is_outgoing() )
             {
-                printf("Might encounter blocking here, receving all sends\n");
+                printf( "RANK: %d ,GID %d\n", (rank_displace)/x_size/y_size, Bridges[j]->GID);
                 Bridges[j]->swap_links();
-                printf("Receieved all sends successfully\n");
                 Bridges[j]->push_data();
             }
         }
