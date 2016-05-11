@@ -253,8 +253,10 @@ std::pair<int, int> Genetic::randomRoad
     int &connected
 )
 {
-    std::pair<int,int> eptr, eptr2, test((int)gauss(0, _gaussian_sigma)+_gaussian_sigma,(int)gauss(0, _gaussian_sigma)+_gaussian_sigma);
+    std::pair<int,int> eptr, eptr2, test((int)gauss(0, _gaussian_sigma), (int)gauss(0, _gaussian_sigma));
     int rd[4], e1, e2;
+    if ( test.first > _args.world_slice_size ) test.first = _args.world_slice_size;
+    if ( test.second > _args.world_slice_size ) test.second = _args.world_slice_size;
     // first try to connect two random endpoints
     if ( points.size() > 0 )
     {
@@ -287,8 +289,8 @@ std::pair<int, int> Genetic::randomRoad
     {
         //fprintf(stderr, "randomRoad entering first if statement with %d, %d\n", eptr.first, eptr.second);
         
-        int x = (int) gauss(eptr.first + 0.5, _gaussian_sigma);
-        int y = (int) gauss(eptr.second + 0.5, _gaussian_sigma);
+        int x = eptr.first + test.first;
+        int y = eptr.second + test.second;
         
         //fprintf(stderr, "randomRoad After calls to 'gauss'\n");
 
