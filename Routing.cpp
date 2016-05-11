@@ -226,8 +226,43 @@ void grid::safty_dance()
   }
 }
 
+void grid::run_test()
+{
+    char filename[20];
+    sprintf(filename, "Bridge_Check_%d.txt", rank_displace/(x_size)/y_size);
+
+
+    FILE* a = fopen(filename, "w");
+
+    for( int i = 0 ; i< Bridges.size() ; i++)
+    {
+        Bridges[i]->GID_testing(a);
+        //Bridges[i]->Connection_testing();
+    }
+
+    printf("Bridge tests run\n");
+    fclose(a);
+
+    for( int i = 0 ; i< Bridges.size() ; i++)
+    {
+        //Bridges[i]->GID_testing(a);
+        Bridges[i]->Connection_testing_S();
+    }
+
+    for( int i = 0 ; i< Bridges.size() ; i++)
+    {
+        //Bridges[i]->GID_testing(a);
+        Bridges[i]->Connection_testing_R();
+    }
+}
+
 void grid::find_routing() //yes?
 {
+    /* why test here */
+    run_test();
+    
+    /* Why not */
+
     // Find paths to important points in the interior
     // Set the paths in place in all local Intersections
     printf("basic prep\n");
@@ -240,6 +275,7 @@ void grid::find_routing() //yes?
     
     safty_dance();
 
+    exit(1);
 
 
     printf("BFS time\n");
