@@ -40,9 +40,21 @@ void Bridge_Intersection::Connection_testing_R()
     MPI_Wait( &Recv, &meh);
 
     //printf("Share rank %d, Recv GID %d , my GID %d\n", share_rank, rdata[0], GID);
-    
+    /*
     if( rdata[1] == is_receiver() )
+    {
         printf( "GID %d: Problem with comms\n", GID);
+        if( is_outgoing() )
+        {
+            printf("Road from %d %d\n", inConnections.back()->srtcoord.first,inConnections.back()->srtcoord.second );
+        }
+        else
+        {
+            printf("Road to %d %d\n", inConnections.back()->endcoord.first,inConnections.back()->endcoord.second );
+        }
+           
+    }
+    */
     
 }
 
@@ -130,7 +142,7 @@ void Bridge_Intersection::process_cars()
     } else {
         int * cars = prepare_cars();
         int count = count_cars();
-        MPI_Send(cars, count, MPI_INT, share_rank, GID, MPI_COMM_WORLD);
+        MPI_Send(cars, count, MPI_INT, share_rank,(-1)*GID, MPI_COMM_WORLD);
         delete(cars);
     }
 }

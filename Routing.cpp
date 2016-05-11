@@ -275,7 +275,7 @@ void grid::find_routing() //yes?
     
     safty_dance();
 
-    exit(1);
+    //exit(1);
 
 
     printf("BFS time\n");

@@ -135,7 +135,7 @@ void grid::add_Road(int GID_f , int GID_t)
 Bridge_Intersection* grid::border_Road(int GID_f, int GID_t, int other_rank)
 {
     int x = (((.5)*(((GID_f+GID_t)*(GID_f+GID_t+1))+GID_t)));
-    x = (x % INT_MAX) ;
+    x = (x % INT_MAX);
     x = x *-1;
     //printf("GIDt: %d  GIDf: %d  x: %d  other_rank %d\n",GID_f, GID_t, x, other_rank );
     Bridge_Intersection * local = new Bridge_Intersection(x, other_rank);
