@@ -45,7 +45,7 @@ std::vector<int> Genetic::getGraph (int ind) {
     // generate initial population if plausible
     while ( ind >= _roads.size() )
     {
-        fprintf(stderr, "GetGraph while loop\n");
+        //fprintf(stderr, "GetGraph while loop\n");
         
         _roads.push_back(generateRoads());
         ++_comm_tag;
@@ -74,10 +74,10 @@ std::vector<int> Genetic::generateRoads()
     for ( it = _cities.begin(), i = 0; it != _cities.end(); ++it, ++i )
     {
         std::vector<int> next_city;
-        std::pair<int,int> loc((*it)->x_,(*it)->y_);
-        fprintf( stderr, "[%d] city at (%d, %d), in [%d, %d]\n",
-                 _args.mpi_rank, loc.first, loc.second,
-                 _args.world_slice_pos, _args.world_slice_pos+_args.world_slice_size );
+        std::pair<int,int> loc((*it)->x_,(*it)->y_+_args.world_slice_pos);
+        //fprintf( stderr, "[%d] city at (%d, %d), in [%d, %d]\n",
+        //         _args.mpi_rank, loc.first, loc.second,
+        //         _args.world_slice_pos, _args.world_slice_pos+_args.world_slice_size );
         if ( loc.second >= _args.world_slice_pos && loc.second < _args.world_slice_pos + _args.world_slice_size )
         {
             next_city.push_back(i);
@@ -95,8 +95,8 @@ std::vector<int> Genetic::generateRoads()
         border_city.push_back(borderc[0]);
         connect.push_back(border_city);
         
-        fprintf( stderr, "[%d] Attempting receive from [%d] with comm tag [%d]\n", 
-                 _args.mpi_rank, _args.neighbors[0], _comm_tag+curr_recv[0] );
+        //fprintf( stderr, "[%d] Attempting receive from [%d] with comm tag [%d]\n", 
+        //         _args.mpi_rank, _args.neighbors[0], _comm_tag+curr_recv[0] );
         MPI_Irecv( border_road[0], 4, MPI_INT, _args.neighbors[0], _comm_tag+curr_recv[0], MPI_COMM_WORLD, &(connection[0]) );
         MPI_Irecv( &(success[0]), 1, MPI_INT, _args.neighbors[0], _comm_tag, MPI_COMM_WORLD, &(confirm[0]) );
     }
@@ -111,9 +111,9 @@ std::vector<int> Genetic::generateRoads()
         border_city.push_back(borderc[1]);
         connect.push_back(border_city);
 
-        fprintf( stderr, "[%d] Attempting receive from [%d] with comm tag [%d]\n", 
-                 _args.mpi_rank, _args.neighbors[1], _comm_tag+curr_recv[1] );
-        MPI_Irecv( border_road[1], 4, MPI_INT, _args.neighbors[1], _comm_tag, MPI_COMM_WORLD, &(connection[1]) );
+        //fprintf( stderr, "[%d] Attempting receive from [%d] with comm tag [%d]\n", 
+        //         _args.mpi_rank, _args.neighbors[1], _comm_tag+curr_recv[1] );
+        MPI_Irecv( border_road[1], 4, MPI_INT, _args.neighbors[1], _comm_tag+curr_recv[1], MPI_COMM_WORLD, &(connection[1]) );
         MPI_Irecv( &(success[1]), 1, MPI_INT, _args.neighbors[1], _comm_tag, MPI_COMM_WORLD, &(confirm[1]) );
     }
     else
@@ -125,14 +125,16 @@ std::vector<int> Genetic::generateRoads()
     
 
     MPI_Barrier(MPI_COMM_WORLD);
+    
+    //fprintf(stderr, "[%d] Test! %d %d %d %d %d\n", _args.mpi_rank, success[0], success[1], success[2], curr_recv[0], curr_recv[1]);
     while ( !(success[0] && success[1] && success[2]) || curr_recv[0] < success[0] || curr_recv[1] < success[1] )
     {
-        fprintf(stderr, "[%d]Test\n", _args.mpi_rank);
+        //fprintf(stderr, "[%d] Status %d %d %d\n", _args.mpi_rank, success[0], success[1], success[2]);
         if ( !success[2] )
         {
             next_road = randomRoad(points, endpoints, connect, curr_send, success[2]);
             
-            //fprintf(stderr, "GenerateRoads primary while loop After 'randomRoad'\n");
+            //fprintf(stderr, "[%d] GenerateRoads primary while loop After 'randomRoad'\n", _args.mpi_rank);
             if ( next_road.first != next_road.second )
             {
                 graph.push_back(next_road.first);
@@ -145,38 +147,46 @@ std::vector<int> Genetic::generateRoads()
             MPI_Request_get_status(connection[0], &count, MPI_STATUS_IGNORE);
             if ( count )
             {
-                ++curr_recv[0];
                 std::pair<int,int> entry(border_road[0][2], border_road[0][3]);
-                fprintf ( stderr, "[%d] Received bridge from (%d, %d) to (%d, %d) on rank %d\n", 
-                          _args.mpi_rank, border_road[0][0], border_road[0][1], border_road[0][2], 
-                          border_road[0][3], _args.neighbors[0] );
+                //fprintf ( stderr, "[%d] Received bridge from (%d, %d) to (%d, %d) from rank %d with comm tag %d\n", 
+                //          _args.mpi_rank, border_road[0][0], border_road[0][1], border_road[0][2], 
+                //          border_road[0][3], _args.neighbors[0], _comm_tag+curr_recv[0] );
+                ++curr_recv[0];
                 graph.push_back(_args.GID_from_coord(border_road[0][0], border_road[0][1]));
                 graph.push_back(_args.GID_from_coord(border_road[0][2], border_road[0][3]));
                 // check to see if contained
-                if ( endpoints.find( entry ) != endpoints.end() )
+                if ( endpoints.find( entry ) != endpoints.end() && endpoints[entry] >= 0 )
                 {
+                    //fprintf(stderr, "[%d] Adding inside stuff %d\n", _args.mpi_rank, endpoints[entry]);
                     int size = connect[endpoints[entry]].size();
+                    //fprintf(stderr, "[%d] Created size\n", _args.mpi_rank);
                     if ( size > 1 &&
                          connect[endpoints[entry]].back() == borderc[1] &&
                          connect[endpoints[entry]][size-2] != borderc[0] )
                     {
+                        //fprintf(stderr, "[%d] Weird case\n", _args.mpi_rank);
                         connect[endpoints[entry]].insert(--(connect[endpoints[entry]].end()), borderc[0]); 
                     }
-                    else if ( connect[endpoints[entry]].back() != borderc[0] )
+                    else if ( connect[endpoints[entry]].back() != borderc[1] && 
+                              connect[endpoints[entry]].back() != borderc[0] )
                     {
+                        //fprintf(stderr, "[%d] Less weird case\n", _args.mpi_rank);
                         connect[endpoints[entry]].push_back(borderc[0]);
                     }
+                    //fprintf(stderr, "[%d] Taken care of\n", _args.mpi_rank);
                     
                     if ( connect[endpoints[entry]].size() == connect.size() )
                     {  
                         MPI_Request req;
-                        success[2] = true;
+                        //fprintf(stderr, "[%d] Everything connected\n", _args.mpi_rank);
+                        success[2] = 1;
                         MPI_Isend( &(curr_send[0]), 1, MPI_INT, _args.neighbors[0], _comm_tag, MPI_COMM_WORLD, &req );                        
                         MPI_Isend( &(curr_send[1]), 1, MPI_INT, _args.neighbors[1], _comm_tag, MPI_COMM_WORLD, &req );                        
                     }
                 }
                 else
                 {
+                    //fprintf(stderr, "[%d] Not adding inside stuff\n", _args.mpi_rank);
                     endpoints[entry] = borderc[0];
                 }
                 if ( !(success[0]) || curr_recv[0] < success[0] )
@@ -191,21 +201,23 @@ std::vector<int> Genetic::generateRoads()
             MPI_Request_get_status(connection[1], &count, MPI_STATUS_IGNORE);
             if ( count )
             {
-                ++curr_recv[1];
                 std::pair<int,int> entry(border_road[1][2], border_road[1][3]);
-                fprintf ( stderr, "[%d] Received bridge from (%d, %d) to (%d, %d) on rank %d\n", 
-                          _args.mpi_rank, border_road[1][0], border_road[1][1], border_road[1][2], 
-                          border_road[1][3], _args.neighbors[1] );
+                //fprintf ( stderr, "[%d] Received bridge from (%d, %d) to (%d, %d) from rank %d with comm tag %d\n", 
+                //          _args.mpi_rank, border_road[1][0], border_road[1][1], border_road[1][2], 
+                //          border_road[1][3], _args.neighbors[1], _comm_tag+curr_recv[1] );
+                ++curr_recv[1];
                 graph.push_back(_args.GID_from_coord(border_road[1][0], border_road[1][1]));
                 graph.push_back(_args.GID_from_coord(border_road[1][2], border_road[1][3]));
                 // check to see if contained
-                if ( endpoints.find(entry) != endpoints.end() && connect[endpoints[entry]].back() != borderc[1] )
+                if ( endpoints.find(entry) != endpoints.end() && 
+                     endpoints[entry] >= 0 && connect[endpoints[entry]].back() != borderc[1] )
                 {
                     connect[endpoints[entry]].push_back(borderc[1]);
                     if ( connect[endpoints[entry]].size() == connect.size() ) 
                     {
                         MPI_Request req;
-                        success[2] = true;
+                        //fprintf(stderr, "[%d] Everything connected\n", _args.mpi_rank);
+                        success[2] = 1;
                         MPI_Isend( &(curr_send[0]), 1, MPI_INT, _args.neighbors[0], _comm_tag, MPI_COMM_WORLD, &req );                        
                         MPI_Isend( &(curr_send[1]), 1, MPI_INT, _args.neighbors[1], _comm_tag, MPI_COMM_WORLD, &req );                                                
                     }
@@ -221,12 +233,12 @@ std::vector<int> Genetic::generateRoads()
             }
         }
         
-        
-        //fprintf(stderr, "GenerateRoads primary while loop after if statements\n");
+        //MPI_Barrier(MPI_COMM_WORLD);
+        //fprintf(stderr, "[%d] GenerateRoads primary while loop after if statements\n", _args.mpi_rank);
         
         
     }
-    fprintf(stderr, "GenerateRoads finished\n");
+    //fprintf(stderr, "GenerateRoads finished\n");
 
     return graph;
 }
@@ -241,23 +253,37 @@ std::pair<int, int> Genetic::randomRoad
     int &connected
 )
 {
-    std::pair<int,int> eptr, eptr2;
+    std::pair<int,int> eptr, eptr2, test((int)gauss(0, _gaussian_sigma)+_gaussian_sigma,(int)gauss(0, _gaussian_sigma)+_gaussian_sigma);
     int rd[4], e1, e2;
     // first try to connect two random endpoints
     if ( points.size() > 0 )
     {
         eptr = points[(int) rand()%points.size()];
-        eptr2 = points[(int) rand()%points.size()];
+        eptr2 = points[(int) rand()%points.size()%cities.size()];
+        /*
+        for ( i = 0; i < cities.size() && 
+              abs(eptr2.first-eptr.first) > abs(test.first) && 
+              abs(eptr2.second-eptr.second) > abs(test.second); ++i )
+        {
+            if ( i != endpoints[eptr] )
+            {
+                eptr2 = points[i%points.size()];
+            }
+        }
+        */
     }
     else
     {
         eptr2 = eptr = std::make_pair( (int) rand()%_args.world_x_size, (int) rand()%_args.world_slice_size + _args.world_slice_pos );
+        endpoints[eptr] = -1;
+        points.push_back(eptr);
     }
     // random walk and add roads
     
+    //fprintf( stderr, "[%d] eptr %d eptr2 %d\n", _args.mpi_rank, endpoints[eptr], endpoints[eptr2] );
     //fprintf(stderr,"randomRoad after intitialisation\n");
     
-    if ( eptr == eptr2 || abs(eptr.first - eptr2.first) > abs(gauss(0, _gaussian_sigma)) || abs(eptr.second - eptr2.second) > abs(gauss(0, _gaussian_sigma)) )
+    if ( eptr == eptr2 || abs(eptr.first-eptr2.first) > abs(test.first) || abs(eptr.first-eptr2.second) > abs(test.second) )
     {
         //fprintf(stderr, "randomRoad entering first if statement with %d, %d\n", eptr.first, eptr.second);
         
@@ -283,11 +309,12 @@ std::pair<int, int> Genetic::randomRoad
             rd[2] = eptr2.first;
             rd[3] = eptr2.second;
             MPI_Isend( rd, 4, MPI_INT, _args.neighbors[0], _comm_tag+curr_send[0], MPI_COMM_WORLD, &req );
-            fprintf ( stderr, "[%d] Sent bridge from (%d, %d) to (%d, %d) to rank %d with comm tag %d\n", 
-                      _args.mpi_rank, rd[0], rd[1], rd[2], rd[3], _args.neighbors[0], _comm_tag+curr_send[0] );
+            //fprintf ( stderr, "[%d] Sent bridge from (%d, %d) to (%d, %d) to rank %d with comm tag %d\n", 
+            //          _args.mpi_rank, rd[0], rd[1], rd[2], rd[3], _args.neighbors[0], _comm_tag+curr_send[0] );
             ++curr_send[0];
+            return std::pair<int,int>(_args.GID_from_coord(eptr.first, eptr.second), _args.GID_from_coord(eptr2.first, eptr2.second));
         }
-        else if ( y >= _args.world_slice_pos+_args.world_slice_size)
+        else if ( y >= _args.world_slice_pos+_args.world_slice_size )
         {
             MPI_Request req;
             rd[0] = eptr.first;
@@ -295,9 +322,10 @@ std::pair<int, int> Genetic::randomRoad
             rd[2] = eptr2.first;
             rd[3] = eptr2.second;
             MPI_Isend( rd, 4, MPI_INT, _args.neighbors[1], _comm_tag+curr_send[1], MPI_COMM_WORLD, &req );
-            fprintf ( stderr, "[%d] Sent bridge from (%d, %d) to (%d, %d) to rank %d with comm tag %d\n", 
-                      _args.mpi_rank, rd[0], rd[1], rd[2], rd[3], _args.neighbors[1], _comm_tag+curr_send[1] );
+            //fprintf ( stderr, "[%d] Sent bridge from (%d, %d) to (%d, %d) to rank %d with comm tag %d\n", 
+            //          _args.mpi_rank, rd[0], rd[1], rd[2], rd[3], _args.neighbors[1], _comm_tag+curr_send[1] );
             ++curr_send[1];
+            return std::pair<int,int>(_args.GID_from_coord(eptr.first, eptr.second), _args.GID_from_coord(eptr2.first, eptr2.second));
         }
         else if ( endpoints.find(eptr2) == endpoints.end() )
         {
@@ -306,35 +334,53 @@ std::pair<int, int> Genetic::randomRoad
         }
     }
     
-    //fprintf(stderr, "randomRoad After first if statement\n");
-    e1 = cities[endpoints[eptr]][0], e2 = cities[endpoints[eptr2]][0];
-        
-    if ( e1 != e2 )
+    if ( endpoints[eptr2] == -1 )
     {
-        std::vector<int> comb(cities[e1].size()+cities[e2].size());
-        std::vector<int>::iterator itr = set_union
-        (
-            cities[e1].begin(),
-            cities[e1].end(),
-            cities[e2].begin(),
-            cities[e2].end(),
-            comb.begin()
-        );
-        comb.resize(itr-comb.begin());
-        
-        cities[e1 < e2? e1 : e2] = comb;
-        
-        if ( comb.size() == cities.size() )
+        endpoints[eptr2] = endpoints[eptr];
+    }
+    else if ( endpoints[eptr] == -1 )
+    {
+        endpoints[eptr] = endpoints[eptr2];
+    }
+    else
+    {
+        e1 = cities[endpoints[eptr]].front();
+        while ( e1 != cities[e1].front() ) e1 = cities[e1].front();
+        e2 = cities[endpoints[eptr2]].front();
+        while ( e2 != cities[e2].front() ) e2 = cities[e2].front();
+        //fprintf( stderr, "[%d] Using %d %d\n", _args.mpi_rank, e1, e2 );
+            
+        if ( e1 != e2 )
         {
-            MPI_Request req;
-            fprintf("[%d] connected graph\n", _args.mpi_rank);
-            connected = 1;
-            MPI_Isend( &(curr_send[0]), 1, MPI_INT, _args.neighbors[0], _comm_tag, MPI_COMM_WORLD, &req );
-            MPI_Isend( &(curr_send[1]), 1, MPI_INT, _args.neighbors[1], _comm_tag, MPI_COMM_WORLD, &req );
+            std::vector<int> comb(cities[e1].size()+cities[e2].size());
+            std::vector<int>::iterator itr = set_union
+            (
+                cities[e1].begin(),
+                cities[e1].end(),
+                cities[e2].begin(),
+                cities[e2].end(),
+                comb.begin()
+            );
+            comb.resize(itr-comb.begin());
+            
+            cities[e1] = comb;
+            cities[e2] = comb;
+            /*fprintf(stderr, "[%d] combined:", _args.mpi_rank);
+            for ( int i = 0; i < comb.size(); ++i )
+                fprintf(stderr, " %d", comb[i]);
+            fprintf(stderr, "\n");
+            */
+            if ( comb.size() == cities.size() )
+            {
+                MPI_Request req;
+                //fprintf(stderr, "[%d] connected graph\n", _args.mpi_rank);
+                connected = 1;
+                MPI_Isend( &(curr_send[0]), 1, MPI_INT, _args.neighbors[0], _comm_tag, MPI_COMM_WORLD, &req );
+                MPI_Isend( &(curr_send[1]), 1, MPI_INT, _args.neighbors[1], _comm_tag, MPI_COMM_WORLD, &req );
+            }
         }
     }
-    
-    //fprintf(stderr, "randomRoad After second if statement\n");
+    //fprintf(stderr, "[%d] randomRoad After second if statement, %d\n", _args.mpi_rank, connected);
     
     //fprintf( stderr, "randomRoad from GID %d to GID %d\n", _args.GID_from_coord(eptr.first, eptr.second), _args.GID_from_coord(eptr2.first, eptr2.second) );
     return std::pair<int,int>(_args.GID_from_coord(eptr.first, eptr.second), _args.GID_from_coord(eptr2.first, eptr2.second));

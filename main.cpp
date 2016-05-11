@@ -72,7 +72,7 @@ int main(int argc, char** argv){
     
     MPI_Barrier(MPI_COMM_WORLD);
     
-    printf("Got past the Genetic Creation\n");
+    //printf("Got past the Genetic Creation\n");
     
     int gen;
     int member;
@@ -81,12 +81,12 @@ int main(int argc, char** argv){
     {
         for ( member = 0; member < worldInfo -> ga_gen_size; ++member )
         {
-            fprintf(stderr, "Main in the for loops\n");
+            //fprintf(stderr, "Main in the for loops\n");
             //Generate roads
             //return 0; //No freeze if this is here
             std::vector<int> Road_data = myGene->getGraph(member);
             fprintf(stderr, "Main Got roads from genetic\n");
-            return 0; //Will freeze if only this return is present
+            // return 0; //Will freeze if only this return is present
             rankMe->Add_Roads(Road_data.data(), Road_data.size());
             fprintf(stderr, "Main Added roads to grid\n");
         
@@ -204,14 +204,14 @@ Genetic* readAndSend(int numCities, Rank* rankMe, FILE* fptr, Info* worldInfo){
         MPI_Isend(buffer, current, MPI_INT, curRank, 1, MPI_COMM_WORLD, &res2);
     }
     
-    printf("Size of rank 0 array: %d\n", mySize);
+    /*printf("Size of rank 0 array: %d\n", mySize);
     for(int j = 0; j < mySize; j+=3){
         printf("Rank 0: %d %d %d\n", myBuf[j], myBuf[j+1], myBuf[j+2]);
         fprintf(stderr, "----------%d\n",rankMe->cities_GID[j]);
     }
     
     fprintf(stderr, "----------%d\n",rankMe->cities_GID[3]);
-    
+    */
     rankMe->City_Start(myBuf, mySize);
     //rankMe->printCities();
     
@@ -246,16 +246,16 @@ Genetic* getCities(Rank* rankMe, Info* worldInfo)
     
     MPI_Recv(&size, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, &stat1);
     
-    printf("Size of rank %d array: %d\n", rankMe->my_rank, size);
+    //printf("Size of rank %d array: %d\n", rankMe->my_rank, size);
     
     int *buffer = (int*)calloc(size, 4);
     
     MPI_Recv(buffer, size, MPI_INT, 0, 1, MPI_COMM_WORLD, &stat2);
-    
+    /*
     for(int j = 0; j < size; j+=3){
         printf("Rank %d: %d %d %d\n", rankMe->my_rank, buffer[j], buffer[j+1], buffer[j+2]);
     }
-    
+    */
     rankMe->City_Start(buffer, size);
     //rankMe->printCities();
     
