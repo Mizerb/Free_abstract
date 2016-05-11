@@ -20,6 +20,7 @@ void Intersection::add_car(Car car)
 void Intersection::process_cars()
 {
     LinkedNode<Car> * targ = head;
+    fprintf(stderr, "i made it?");
             while(targ != NULL)
             {
                 LinkedNode<Car> * currNode = targ;

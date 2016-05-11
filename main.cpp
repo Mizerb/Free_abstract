@@ -96,10 +96,10 @@ int main(int argc, char** argv){
             
         
             //Run Sim
-            rankMe->Run_Sim();
+            //rankMe->Run_Sim();
             fprintf(stderr, "Main Ran the Sim\n");
             
-            rankMe->Reset_Sim();
+            //rankMe->Reset_Sim();
             fprintf(stderr, "Main Reset the sim\n");
         }
     }
@@ -143,7 +143,6 @@ Genetic* readAndSend(int numCities, Rank* rankMe, FILE* fptr, Info* worldInfo){
     //fscanf(fptr, "%d,%d,%d\n", buffer + current, buffer + current + 1, buffer + current + 2);
     //fprintf(stderr, "reading in city info\n");
     rankMe->cities_GID = (int*)calloc(sizeof(int),numCities);
-    rankMe->cities_GID[0] = worldInfo->GID_from_coord(buffer[0],buffer[1]);
     //fprintf(stderr, "Outside: %d %d %d %d\n", i, buffer[current], buffer[current +1], buffer[current+2]);
     i++;
     //int runs = 0;
@@ -190,6 +189,8 @@ Genetic* readAndSend(int numCities, Rank* rankMe, FILE* fptr, Info* worldInfo){
             i++;
         }
     }
+    
+    
     
     current +=3;
     if(curRank == 0)

@@ -21,12 +21,13 @@ private:
     
 
     std::vector<std::vector<Intersection*> > Intersections;
-    std::vector<City*> Cities;
+    
 
     std::vector<Bridge_Intersection*> Bridges;
 
     std::vector<Road*> Roads;
 public:
+    std::vector<City*> Cities;
     grid();
     ~grid();
     

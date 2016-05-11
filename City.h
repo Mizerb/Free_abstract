@@ -1,6 +1,7 @@
 #ifndef CITY_H
 #define CITY_H
 
+#include <iterator>
 #include "includer.h"
 #include "Intersection.h"
 
@@ -16,7 +17,25 @@ public:
     
     int received;
     char type(){ return 'c';}
-
+    void make_Cars()
+    {
+        fprintf(stderr,"%d\n",(int)directions.size());
+        for(int i =0; i<population/2;i++)
+        {
+            int rando = drand48()*directions.size();
+            int j =0;
+            for (std::map<int,Road*>::iterator it=directions.begin(); it!=directions.end(); ++it)
+            {
+                
+                if(j>rando)
+                {
+                    add_car(Car(it->first));
+                    break;
+                }
+            }
+        }
+    }
+    
     void add_car(Car car)
     {
         if(car.destination == GID)

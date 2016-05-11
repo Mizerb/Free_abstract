@@ -93,10 +93,16 @@ void Rank::Add_Roads(int * GIDs, int leng)
 
 void Rank::Run_Sim()
 {
+    fprintf(stderr, "hello!\n");
     //Take it away Aaron!!!!
     MPI_Barrier(MPI_COMM_WORLD);
+    for(int i=0; i<local_grid->Cities.size();i++)
+    {
+        local_grid->Cities[i]->make_Cars();
+    }
     for(int x = 0; x<1000;x++)
     {
+        
         local_grid->run_Tick();
         MPI_Barrier(MPI_COMM_WORLD);
     }
