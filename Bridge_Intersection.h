@@ -51,6 +51,10 @@ public:
     void swap_links();
     void push_data();
     void rank_sharing();
+    void Connection_testing_R();
+    void Connection_testing_S();
+    void GID_testing(FILE * outfile);
+
     //void swap_links_collect();
 };
 

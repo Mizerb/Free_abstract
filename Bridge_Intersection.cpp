@@ -1,6 +1,51 @@
 #include "Bridge_Intersection.h"
 #include "Intersection.h"
 
+void Bridge_Intersection::GID_testing(FILE * outfile)
+{
+    fprintf(outfile , "GID%d Target%d\n", GID, share_rank);
+}
+
+void Bridge_Intersection::Connection_testing_S()
+{
+    int tag = GID;
+    MPI_Request  Sender;
+    MPI_Status meh;
+
+    int sdata[2]; 
+    sdata[0] = GID; sdata[1] = (is_receiver());
+    
+    
+    MPI_Isend(sdata, 2, MPI_INT, share_rank, (-1)*GID, MPI_COMM_WORLD, &Sender);
+
+    //MPI_Wait( &Recv, &meh);
+
+    //printf("Share rank %d, Recv GID %d , my GID %d\n", share_rank, rdata[0], GID);
+    /*
+    if( (rdata[1]==12) && sdata[1] == 12 )
+        printf( "Problem with comms\n");
+    */
+}
+
+void Bridge_Intersection::Connection_testing_R()
+{
+    int tag = GID;
+    MPI_Request Recv;
+    MPI_Status meh;
+
+    int rdata[2];
+    
+    MPI_Irecv(rdata, 2, MPI_INT, share_rank, (-1)*GID , MPI_COMM_WORLD, &Recv);
+
+    MPI_Wait( &Recv, &meh);
+
+    //printf("Share rank %d, Recv GID %d , my GID %d\n", share_rank, rdata[0], GID);
+    
+    if( rdata[1] == is_receiver() )
+        printf( "GID %d: Problem with comms\n", GID);
+    
+}
+
 void Bridge_Intersection::route_prep()
 {
     link_sharing = new std::vector<Bridge_Intersection>();
@@ -63,9 +108,9 @@ void Bridge_Intersection::process_cars()
     if(is_receiver()){
         
         int amount;
-        MPI_Recv(&amount, 1, MPI_INT, share_rank, GID, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Recv(&amount, 1, MPI_INT, share_rank, (-1)*GID, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         int * cars = (int*)calloc(sizeof(int),amount);
-        MPI_Recv(cars, amount, MPI_INT, share_rank, GID, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Recv(cars, amount, MPI_INT, share_rank, (-1)*GID, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         add_cars(cars, amount);
         delete(cars);
         LinkedNode<Car> * targ = head;
@@ -114,14 +159,14 @@ void Bridge_Intersection::swap_links()
     {
         //POST MPI RECEIVE
         MPI_Status stat;  int count;
-        MPI_Probe(share_rank, GID, MPI_COMM_WORLD,  &stat);
+        MPI_Probe(share_rank, (-1)*GID, MPI_COMM_WORLD,  &stat);
         
         
         MPI_Get_count(&stat, MPI_INT, &count);
         
         int *data = new int[count];
      
-        MPI_Recv(data, count , MPI_INT, share_rank, GID, MPI_COMM_WORLD, &stat );
+        MPI_Recv(data, count , MPI_INT, share_rank, (-1)*GID, MPI_COMM_WORLD, &stat );
         for(int i =0 ; i<count ; i+=2)
         {
             std::map<int,int>::iterator it;
@@ -149,7 +194,7 @@ void Bridge_Intersection::swap_links()
         }
         
         MPI_Isend( data,linked_cites->size()*2,  MPI_INT, 
-            share_rank, GID, MPI_COMM_WORLD, &request );
+            share_rank, (-1)*GID, MPI_COMM_WORLD, &request );
         delete data;
     }
     else
