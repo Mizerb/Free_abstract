@@ -182,8 +182,14 @@ std::vector<int> Genetic::generateRoads()
                         MPI_Request req;
                         //fprintf(stderr, "[%d] Everything connected\n", _args.mpi_rank);
                         success[2] = 1;
-                        MPI_Isend( &(curr_send[0]), 1, MPI_INT, _args.neighbors[0], _comm_tag, MPI_COMM_WORLD, &req );                        
-                        MPI_Isend( &(curr_send[1]), 1, MPI_INT, _args.neighbors[1], _comm_tag, MPI_COMM_WORLD, &req );                        
+                        if ( curr_send[0] > 0 )
+                        {
+                            MPI_Isend( &(curr_send[0]), 1, MPI_INT, _args.neighbors[0], _comm_tag, MPI_COMM_WORLD, &req );                        
+                        }
+                        if ( curr_send[1] > 0 )
+                        {
+                            MPI_Isend( &(curr_send[1]), 1, MPI_INT, _args.neighbors[1], _comm_tag, MPI_COMM_WORLD, &req );                        
+                        }
                     }
                 }
                 else
@@ -222,8 +228,14 @@ std::vector<int> Genetic::generateRoads()
                         MPI_Request req[2];
                         //fprintf(stderr, "[%d] Everything connected\n", _args.mpi_rank);
                         success[2] = 1;
-                        MPI_Isend( &(curr_send[0]), 1, MPI_INT, _args.neighbors[0], _comm_tag, MPI_COMM_WORLD, &(req[0]) );                        
-                        MPI_Isend( &(curr_send[1]), 1, MPI_INT, _args.neighbors[1], _comm_tag, MPI_COMM_WORLD, &(req[1]) );                                                
+                        if ( curr_send[0] > 0 )
+                        {
+                            MPI_Isend( &(curr_send[0]), 1, MPI_INT, _args.neighbors[0], _comm_tag, MPI_COMM_WORLD, &(req[0]) );                        
+                        }
+                        if ( curr_send[1] > 0 )
+                        {
+                            MPI_Isend( &(curr_send[1]), 1, MPI_INT, _args.neighbors[1], _comm_tag, MPI_COMM_WORLD, &(req[1]) );                                                
+                        }
                     }
                 }
                 else
@@ -382,8 +394,14 @@ std::pair<int, int> Genetic::randomRoad
                 MPI_Request req[2];
                 fprintf(stderr, "[%d] connected graph!\n", _args.mpi_rank);
                 connected = 1;
-                MPI_Isend( &(curr_send[0]), 1, MPI_INT, _args.neighbors[0], _comm_tag, MPI_COMM_WORLD, &(req[0]) );
-                MPI_Isend( &(curr_send[1]), 1, MPI_INT, _args.neighbors[1], _comm_tag, MPI_COMM_WORLD, &(req[1]) );
+                if ( curr_send[0] > 0 )
+                {
+                    MPI_Isend( &(curr_send[0]), 1, MPI_INT, _args.neighbors[0], _comm_tag, MPI_COMM_WORLD, &(req[0]) );
+                }
+                if ( curr_send[1] > 0 )
+                {
+                    MPI_Isend( &(curr_send[1]), 1, MPI_INT, _args.neighbors[1], _comm_tag, MPI_COMM_WORLD, &(req[1]) );
+                }
             }
         }
     }
