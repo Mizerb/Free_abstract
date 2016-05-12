@@ -314,9 +314,9 @@ std::pair<int, int> Genetic::randomRoad
             rd[1] = eptr.second;
             rd[2] = eptr2.first;
             rd[3] = eptr2.second;
-            MPI_Isend( rd, 4, MPI_INT, _args.neighbors[0], _comm_tag+curr_send[0], MPI_COMM_WORLD, &req );
-            fprintf ( stderr, "[%d] Sent bridge from (%d, %d) to (%d, %d) to rank %d with comm tag %d\n", 
+            fprintf ( stderr, "[%d] Sending bridge from (%d, %d) to (%d, %d) to rank %d with comm tag %d\n", 
                       _args.mpi_rank, rd[0], rd[1], rd[2], rd[3], _args.neighbors[0], _comm_tag+curr_send[0] );
+            MPI_Isend( rd, 4, MPI_INT, _args.neighbors[0], _comm_tag+curr_send[0], MPI_COMM_WORLD, &req );
             ++curr_send[0];
             return std::pair<int,int>(_args.GID_from_coord(eptr.first, eptr.second), _args.GID_from_coord(eptr2.first, eptr2.second));
         }
@@ -327,9 +327,9 @@ std::pair<int, int> Genetic::randomRoad
             rd[1] = eptr.second;
             rd[2] = eptr2.first;
             rd[3] = eptr2.second;
-            MPI_Isend( rd, 4, MPI_INT, _args.neighbors[1], _comm_tag+curr_send[1], MPI_COMM_WORLD, &req );
-            fprintf ( stderr, "[%d] Sent bridge from (%d, %d) to (%d, %d) to rank %d with comm tag %d\n", 
+            fprintf ( stderr, "[%d] Sending bridge from (%d, %d) to (%d, %d) to rank %d with comm tag %d\n", 
                       _args.mpi_rank, rd[0], rd[1], rd[2], rd[3], _args.neighbors[1], _comm_tag+curr_send[1] );
+            MPI_Isend( rd, 4, MPI_INT, _args.neighbors[1], _comm_tag+curr_send[1], MPI_COMM_WORLD, &req );
             ++curr_send[1];
             return std::pair<int,int>(_args.GID_from_coord(eptr.first, eptr.second), _args.GID_from_coord(eptr2.first, eptr2.second));
         }
