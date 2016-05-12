@@ -57,6 +57,7 @@ void Rank::Add_Roads(int * GIDs, int leng)
                 continue;
             }
             local_grid->add_Road( GIDs[i], GIDs[i+1]);
+            local_grid->add_Road( GIDs[i+1], GIDs[i]);
             //printf("finish\n");
         }
         else if(in_grid(GIDs[i]) )
@@ -68,6 +69,9 @@ void Rank::Add_Roads(int * GIDs, int leng)
             Bridge_Intersection *a = local_grid->border_Road(GIDs[i], GIDs[i+1], other_rank);
 
             local_grid->add_Road(GIDs[i] , a , GIDs[i+1]);
+
+            a = local_grid->border_Road(GIDs[i+1], GIDs[i], other_rank );
+            local_grid->add_Road(a , GIDs[i+1], GIDs[i]);
         }
         else if(in_grid(GIDs[i+1]))
         {
@@ -78,6 +82,11 @@ void Rank::Add_Roads(int * GIDs, int leng)
             Bridge_Intersection *a = local_grid->border_Road(GIDs[i], GIDs[i+1], other_rank);
 
             local_grid->add_Road(a , GIDs[i+1], GIDs[i]);
+
+            a = local_grid->border_Road(GIDs[i+1] , GIDs[i] , other_rank);
+
+            local_grid->add_Road(GIDs[i+1], a, GIDs[i]);
+
         }
     }
 

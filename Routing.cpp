@@ -13,11 +13,12 @@ struct BFS_compare
 
 void grid::BFS(Intersection* root)
 {
-    //std::priority_queue<Intersection*,std::vector<Intersection*>, BFS_compare> Q;
-    
+    std::priority_queue<Intersection*,std::vector<Intersection*>, BFS_compare> Q;
+    std::set<int > Visted;
+    /*
     std::multiset<Intersection*, BFS_compare> Q;
-    std::multiset<Intersection*, BFS_compare>::iterator it;
-
+    std::multiset<Intersection*, BFS_compare>::iterator it ,mit;
+    */
     printf("Double check? %d , %d\n", (int)Intersections.size(), (int)Intersections[0].size());
     //printf("Setting everything to zero\n");
     for(int i = 0 ; i < Intersections.size(); i++)
@@ -25,7 +26,7 @@ void grid::BFS(Intersection* root)
     {
         Intersections[i][j]->dist = INT_MAX;
         Intersections[i][j]->prev = NULL;
-        Q.insert(Intersections[i][j]);
+        //Q.push(Intersections[i][j]);
     }
 
     printf("size change? %d\n", (int)Q.size());
@@ -34,12 +35,14 @@ void grid::BFS(Intersection* root)
     {
         Bridges[i]->dist = INT_MAX;
         Bridges[i]->prev = NULL;
-        Q.insert(dynamic_cast<Intersection*> (Bridges[i]));
+        //Q.insert(dynamic_cast<Intersection*> (Bridges[i]));
     }
-    
+
+
+    //exit(1);
+    //printf("into the BFS\n");
+    /*
     it = Q.find( root);
-
-
     if( it == Q.end() )
     {
         printf( "Non zero top value \n");
@@ -49,20 +52,17 @@ void grid::BFS(Intersection* root)
     root->dist = 0;
     Q.erase(it); Q.insert(root);
 
-    printf("Q size: %d , top GID %d root GID %d\n",(int)Q.size(), (*Q.begin())->GID, root->GID  );
-
-
-    //exit(1);
-    //printf("into the BFS\n");
     while( not Q.empty() )
     {
         Intersection* local = *(Q.begin()); Q.erase(local);
+        printf("LOCAL GID: %d dist :%d ; Q size: %d\n", local->GID , local->dist, (int)(Q.size()));
         for( int i=0 ; i < local->outConnections.size() ; i++)
         {
             Intersection* out = local->outConnections[i]->out;
-            it = Q.find( out);
+            printf("GID: %d Current Dist %d \n", out->GID, out-> dist);
+            it = Q.find( out );
             if( it == Q.end() ){
-                printf("Connection not found\n");
+                //printf("Connection not found\n");
                 continue;
             }
             else
@@ -75,19 +75,52 @@ void grid::BFS(Intersection* root)
             int alt = local->outConnections[i]->get_weight() + local->dist;
             if( alt < out->dist )
             {
-                out -> dist = alt;
-                out -> prev = local;
-                it = Q.find( out);
+                //if( (*it) == out) printf("fuck you\n");
+                /*
+                printf("Q.size() %d\n",(int) Q.size());
+                Q.erase(out);
+                printf("Q.size() %d\n",(int) Q.size());
+                
+                (out) -> dist = alt;
+                (out) -> prev = local;
+                mit = Q.find( out);
+                if( it == mit) printf("fuck you\n");
+                printf("out dist: %d , alt %d\n", out -> dist , alt); 
                 if( it == Q.end() )
                 {
                   printf( "LInked to intersec not in Q...\n");
                   printf( "GID of OUT: %d\n" ,out->GID );
                   Q.insert(out);  
-                } 
-                else Q.erase(out);Q.insert(out);
-            
+                }
+                //else 
+                //Q.insert(out);
             }
         }
+    }*/
+
+    root->dist = 0;
+    Q.push(root);
+
+    printf("Q size: %d , top GID %d root GID %d\n",(int)Q.size(), (Q.top())->GID, root->GID  );
+
+
+    while( not Q.empty())
+    {
+        Intersection * local = Q.top(); Q.pop();
+        printf("LOCAL GID: %d dist :%d ; Q size: %d\n", local->GID , local->dist, (int)(Q.size()));
+        for( int i=0 ; i < local->outConnections.size() ; i++)
+        {
+            Intersection* out = local->outConnections[i]->out;
+            if( Visted.find(out->GID) != Visted.end()) continue;
+            int alt = local->outConnections[i]->get_weight() + local->dist;
+            if( alt < out->dist )
+            {
+                (out) -> dist = alt;
+                (out) -> prev = local;
+                Q.push(out);
+            }
+        }
+        Visted.insert( local->GID);
     }
 
 }
@@ -242,7 +275,7 @@ void grid::safty_dance()
 
 void grid::run_test()
 {
-    char filename[20];
+    char filename[128];
     sprintf(filename, "Bridge_Check_%d.txt", rank_displace/(x_size)/y_size);
 
 
