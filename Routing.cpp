@@ -101,13 +101,13 @@ void grid::BFS(Intersection* root)
     root->dist = 0;
     Q.push(root);
 
-    printf("Q size: %d , top GID %d root GID %d\n",(int)Q.size(), (Q.top())->GID, root->GID  );
+    //printf("Q size: %d , top GID %d root GID %d\n",(int)Q.size(), (Q.top())->GID, root->GID  );
 
 
     while( not Q.empty())
     {
         Intersection * local = Q.top(); Q.pop();
-        printf("LOCAL GID: %d dist :%d ; Q size: %d\n", local->GID , local->dist, (int)(Q.size()));
+        //printf("LOCAL GID: %d dist :%d ; Q size: %d\n", local->GID , local->dist, (int)(Q.size()));
         for( int i=0 ; i < local->outConnections.size() ; i++)
         {
             Intersection* out = local->outConnections[i]->out;
@@ -170,14 +170,14 @@ void grid::trace_back(City* path_enda ) //CITY TO CITY
 {
     Intersection* path_end = dynamic_cast<Intersection*> (path_enda);
     if( path_end->prev == NULL) return; //was not reached
-    printf(" Got 1\n");
+    //printf(" Got 1\n");
     int GID_to = path_end->GID;
     while( path_end->dist > 0)
     {
         Road * path = path_end->prev->find_road_to(path_end);
         path_end->prev->directions[GID_to] = path;
         path_end = path_end->prev;
-        printf("moved back");
+        //printf("moved back");
     }
 }
 
@@ -200,7 +200,7 @@ void grid::trace_back(Bridge_Intersection * path_enda , Bridge_Intersection * fr
 {
     Intersection* path_end = dynamic_cast<Intersection*> (path_enda);
     if( path_end->prev == NULL) return; //was not reached
-    
+    printf("Here2\n");
     int GID_to = path_end->GID;
     path_enda->linked_Bridges->push_back(std::make_pair<Bridge_Intersection*,int>(from,path_end->dist));
     while( path_end->dist > 0)
