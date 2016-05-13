@@ -50,7 +50,12 @@ public:
     
     void runSearch()
     {
+        MPI_Barrier(MPI_COMM_WORLD);
+        unsigned long long start = GetTimeBase() ,finish;
         local_grid->find_routing();
+        end = GetTimeBase();
+        printf( "[%d] RunSeach took %lu\n", my_rank, end-start );
+   
     }
     
     /* Think this is the same as Reset_Sim();
