@@ -7,6 +7,9 @@
 #include <cstdlib>
 #include <mpi.h>
 
+#include <hwi/include/bqc/A2_inlines.h>
+
+
 class Info
 {
 public:
@@ -26,6 +29,11 @@ public:
     
     int GID_from_coord( int x , int y);
 };
+
+unsigned long long GetTimeBase()
+{
+    return (unsigned long long) 
+}
 
 
 #endif
