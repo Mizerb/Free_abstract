@@ -79,6 +79,7 @@ public:
 
     void safty_dance();
     void run_test();
+    void Connection_test();
 
     int total_ranks;
 

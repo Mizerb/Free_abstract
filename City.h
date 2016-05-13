@@ -65,6 +65,8 @@ public:
     int getPop(){return population;}
     
     void Prep_way() { ways_out = new std::map<int,std::pair<int,int> >();}
+
+    int Connections(){ return directions.size();}
 };
 
 
