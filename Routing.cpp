@@ -19,7 +19,7 @@ void grid::BFS(Intersection* root)
     std::multiset<Intersection*, BFS_compare> Q;
     std::multiset<Intersection*, BFS_compare>::iterator it ,mit;
     */
-    printf("Double check? %d , %d\n", (int)Intersections.size(), (int)Intersections[0].size());
+    //printf("Double check? %d , %d\n", (int)Intersections.size(), (int)Intersections[0].size());
     //printf("Setting everything to zero\n");
     for(int i = 0 ; i < Intersections.size(); i++)
       for(int j =0 ; j< Intersections[i].size(); j++)
@@ -29,7 +29,7 @@ void grid::BFS(Intersection* root)
         //Q.push(Intersections[i][j]);
     }
 
-    printf("size change? %d\n", (int)Q.size());
+    //printf("size change? %d\n", (int)Q.size());
     
     for(int i = 0; i < Bridges.size() ; i++ )
     {
@@ -190,7 +190,7 @@ void grid::trace_back(Bridge_Intersection * path_enda , City * from)  //OUTGOING
     path_enda->linked_cites->push_back(std::make_pair<City*,int>(from,path_end->dist));
     while( path_end->dist > 0)
     {
-        Road * path = path_end->prev->find_road_to(path_end->GID);
+        Road * path = path_end->prev->find_road_to(path_end);
         path_end->prev->directions[GID_to] = path;
         path_end = path_end->prev;
     }
@@ -205,7 +205,7 @@ void grid::trace_back(Bridge_Intersection * path_enda , Bridge_Intersection * fr
     path_enda->linked_Bridges->push_back(std::make_pair<Bridge_Intersection*,int>(from,path_end->dist));
     while( path_end->dist > 0)
     {
-        Road * path = path_end->prev->find_road_to(from->GID);
+        Road * path = path_end->prev->find_road_to(path_end);
         path_end->prev->directions[GID_to] = path;
         path_end = path_end->prev;
     }
@@ -220,7 +220,7 @@ void grid::trace_back(City * path_enda , Bridge_Intersection * from) //CITY TO I
     from->linked_cites->push_back(std::make_pair<City*,int>(path_enda,path_end->dist));
     while( path_end->dist > 0)
     {
-        Road * path = path_end->prev->find_road_to(path_end->GID);
+        Road * path = path_end->prev->find_road_to(path_end);
         path_end->prev->directions[GID_to] = path;
         path_end = path_end->prev;
     }
@@ -287,7 +287,7 @@ void grid::run_test()
         //Bridges[i]->Connection_testing();
     }
 
-    printf("Bridge tests run\n");
+    //printf("Bridge tests run\n");
     fclose(a);
 
     for( int i = 0 ; i< Bridges.size() ; i++)

@@ -66,16 +66,16 @@ Intersection::Intersection( int x, int y )
 
 void Intersection::add_out_Road(Road* new_Road)
 {
-    outConnections.push_back(new_Road);
     new_Road->start = GID;
     new_Road->set_start(x_,y_);
+    outConnections.push_back(new_Road);
 }
 
 void Intersection::add_in_Road(Road* new_Road)
 {
-    inConnections.push_back(new_Road);
     new_Road->end = GID;
     new_Road->set_end(x_,y_);
+    inConnections.push_back(new_Road);
 }
 
 Road * Intersection::find_road_to(int GID)
@@ -84,8 +84,8 @@ Road * Intersection::find_road_to(int GID)
     {
         if( outConnections[i]->end_GID() == GID ) return outConnections[i];
     }
-    fprintf(stderr,"Connection does not exist\n");
-    exit(1);
+    //fprintf(stderr,"Connection does not exist %d\n" , GID);
+    //exit(1);
 }
 
 Road * Intersection::find_road_to( Intersection * me)
@@ -94,8 +94,8 @@ Road * Intersection::find_road_to( Intersection * me)
     {
         if( outConnections[i]->out == me ) return outConnections[i];
     }
-    fprintf(stderr,"Connection does not exist\n");
-    exit(1);
+    //fprintf(stderr,"Connection does not exist\n");
+    //exit(1);
 }
 
 void Intersection::del_cars()

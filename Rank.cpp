@@ -58,6 +58,7 @@ void Rank::Add_Roads(int * GIDs, int leng)
             }
             local_grid->add_Road( GIDs[i], GIDs[i+1]);
             local_grid->add_Road( GIDs[i+1], GIDs[i]);
+            continue;
             //printf("finish\n");
         }
         else if(in_grid(GIDs[i]) )
@@ -70,8 +71,10 @@ void Rank::Add_Roads(int * GIDs, int leng)
 
             local_grid->add_Road(GIDs[i] , a , GIDs[i+1]);
 
+/*
             a = local_grid->border_Road(GIDs[i+1], GIDs[i], other_rank );
             local_grid->add_Road(a , GIDs[i+1], GIDs[i]);
+*/
         }
         else if(in_grid(GIDs[i+1]))
         {
@@ -83,15 +86,47 @@ void Rank::Add_Roads(int * GIDs, int leng)
 
             local_grid->add_Road(a , GIDs[i+1], GIDs[i]);
 
+/*
             a = local_grid->border_Road(GIDs[i+1] , GIDs[i] , other_rank);
-
-            local_grid->add_Road(GIDs[i+1], a, GIDs[i]);
-
+            local_grid->add_Road(GIDs[i], a, GIDs[i+1]);
+*/
         }
+        int temp = GIDs[i]; GIDs[i] = GIDs[i+1]; GIDs[i+1] = temp;
+        if(in_grid(GIDs[i]) )
+        {
+            //ADD border Road and stuff
+            
+            //printf("shit a GID:%d\n", GIDs[i+1]);
+            int other_rank= (GIDs[i+1]/x_world_size)/y_size; 
+            Bridge_Intersection *a = local_grid->border_Road(GIDs[i], GIDs[i+1], other_rank);
+
+            local_grid->add_Road(GIDs[i] , a , GIDs[i+1]);
+
+/*
+            a = local_grid->border_Road(GIDs[i+1], GIDs[i], other_rank );
+            local_grid->add_Road(a , GIDs[i+1], GIDs[i]);
+*/
+        }
+        if(in_grid(GIDs[i+1]))
+        {
+            // Add 
+            //printf("shit b\n");
+            //printf("shit a GID:%d\n", GIDs[i]);
+            int other_rank= (GIDs[i]/x_world_size)/y_size; 
+            Bridge_Intersection *a = local_grid->border_Road(GIDs[i], GIDs[i+1], other_rank);
+
+            local_grid->add_Road(a , GIDs[i+1], GIDs[i]);
+/*
+            a = local_grid->border_Road(GIDs[i+1] , GIDs[i] , other_rank);
+            local_grid->add_Road(GIDs[i], a, GIDs[i+1]);
+*/
+        }
+
+
     }
 
-    printf( "RANK %d:BRIDGE NODE COUNT %d\n",my_rank, local_grid->get_bridge_size());
-    printf( "RANK %d:ROAD COUNTING %d\n",my_rank, local_grid->get_road_count());
+    //printf( "RANK %d:BRIDGE NODE COUNT %d\n",my_rank, local_grid->get_bridge_size());
+    //printf( "RANK %d:ROAD COUNTING %d\n",my_rank, local_grid->get_road_count());
     //exit(1);
 
     //local_grid->safty_dance();

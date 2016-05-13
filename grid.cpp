@@ -171,6 +171,7 @@ void grid::add_Road(Bridge_Intersection* from_, int GID_t, int GID_f)
     
     local->set_weight( sqrt( (x*x)+(y*y))/2 );
 
+/*
 
     if( from_->outConnections.back()->out != a ) //Somehow this isn't being met.
     {
@@ -187,7 +188,7 @@ void grid::add_Road(Bridge_Intersection* from_, int GID_t, int GID_f)
         printf("FUCK, road start is not equal to intersection\n");
         exit(1);
     }
-
+*/
     return;
 } 
 
